@@ -1,7 +1,7 @@
 ---
 title: "ST 518 Homework 1"
 author: "Eric Warren"
-date: "`r Sys.Date()`"
+date: "September 1, 2023"
 urlcolor: blue
 ---
 
@@ -22,7 +22,7 @@ rmarkdown::render("~/ST-518/Warren_ST 518 HW 1.Rmd",
 
 ```{r options, include=FALSE}
 library(tidyverse)
-knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, tidy.opts=list(width.cutoff=70), tidy=TRUE)
 ```
 
 Read in the data to use for the problem
@@ -58,7 +58,7 @@ Here we are going to find some important summary statistics.
 
 ### Part i
 
-Finding $\bar{y}$. This is the son average height.
+Finding $\bar{y} = \frac{1}{n} * \sum y_i$. This is the son average height.
 ```{r problem 1 part b part i}
 y_bar <- mean(heights$son)
 y_bar
@@ -67,7 +67,7 @@ Here we can see that the $\bar{y}$ = `r y_bar` inches.
 
 ### Part ii
 
-Finding $\bar{x}$. This is the midparent average height.
+Finding $\bar{x} = \frac{1}{n} * \sum x_i$. This is the midparent average height.
 ```{r problem 1 part b part ii}
 x_bar <- mean(heights$parent)
 x_bar
@@ -76,7 +76,7 @@ Here we can see that the $\bar{x}$ = `r x_bar` inches.
 
 ### Part iii
 
-Finding $S_{xy}$.
+Finding $S_{xy} = \sum(x_i - \bar{x})(y_i - \bar{y})$.
 ```{r problem 1 part b part iii}
 S_xy <- sum((heights$parent - x_bar) * (heights$son - y_bar))
 S_xy
@@ -85,7 +85,7 @@ Here we can see that $S_{xy}$ is `r S_xy`.
 
 ### Part iv
 
-Finding $s_{xy}$.
+Finding $s_{xy} = \frac{1}{n-1} * \sum(x_i - \bar{x})(y_i - \bar{y})$.
 ```{r problem 1 part b part iv}
 s_xy <- (1 / (nrow(heights) - 1)) * sum((heights$parent - x_bar) * (heights$son - y_bar))
 s_xy
@@ -112,7 +112,7 @@ We can find this value to be `r sum_vi`.
 
 ### Part vii
 
-Finding $S_{xx}$
+Finding $S_{xx} = \sum(x_i - \bar{x})^2$
 ```{r problem 1 part b part vii}
 S_xx <- sum((heights$parent - x_bar) ** 2)
 S_xx
@@ -121,7 +121,7 @@ Here we can see that $S_{xx}$ is `r S_xx`.
 
 ### Part viii
 
-Finding $s_{x}^2$
+Finding $s_{x}^2 = \frac{1}{n-1} * \sum(x_i - \bar{x})^2$
 ```{r problem 1 part b part viii}
 s_x2 <- (1 / (nrow(heights) - 1)) * sum((heights$parent - x_bar) ** 2)
 s_x2
@@ -130,7 +130,7 @@ Here we can see that $s_{x}^2$ is `r s_x2`.
 
 ### Part ix
 
-Finding $S_{yy}$
+Finding $S_{yy}= \sum(y_i - \bar{y})^2$
 ```{r problem 1 part b part ix}
 S_yy <- sum((heights$son - y_bar) ** 2)
 S_yy
@@ -139,7 +139,7 @@ Here we can see that $S_{yy}$ is `r S_yy`.
 
 ### Part x
 
-Finding $s_{y}^2$
+Finding $s_{y}^2= \frac{1}{n-1} * \sum(y_i - \bar{y})^2$
 ```{r problem 1 part b part x}
 s_y2 <- (1 / (nrow(heights) - 1)) * sum((heights$son - y_bar) ** 2)
 s_y2
@@ -178,7 +178,7 @@ When solving parts we are going to use the following information:
 
 ## Part A
 
-Obtain a 95% confidence interval for the mean of the population from which the sample was drawn, post-treatment. The formula we will use is confidence interval = $\bar{y} \pm z * \frac{s_y}{\sqrt{n}}$ where $z = 1.96$ in a 95% confidence interval
+Obtain a 95% confidence interval for the mean of the population from which the sample was drawn, post-treatment. The formula we will use is confidence interval = $\bar{y} \pm t_{\alpha / 2, n-2} * SE_y = \bar{y} \pm t_{\alpha / 2, n-2} * \frac{s_y}{\sqrt{n}}$. We use t instead of z for our test-statistic since the population standard deviation is unknown ($\sigma$ is not known).
 ```{r problem 2 part a}
 r_treatment <- 0.7
 x_bar_treatment <- 10.7
@@ -186,10 +186,14 @@ y_bar_treatment <- 7.9
 s_x_treatment <- 4.8
 s_y_treatment <- 6.7
 n_treatment <- 30
-z_95 <- 1.96
-post_treat_confidence_interval_lower <- y_bar_treatment - z_95 * (s_y_treatment / sqrt(n_treatment))
+
+# This is the t critical value with a 95% confidence interval with n-2 (or 30-2=28) degrees of freedom
+t_treatment <- qt(p = .05 / 2, df = n_treatment - 2, lower.tail = FALSE)
+
+# Find lower and upper confidence bounds
+post_treat_confidence_interval_lower <- y_bar_treatment - (t_treatment * (s_y_treatment / sqrt(n_treatment))) #Lower confidence bound
 post_treat_confidence_interval_lower
-post_treat_confidence_interval_upper <- y_bar_treatment + z_95 * (s_y_treatment / sqrt(n_treatment))
+post_treat_confidence_interval_upper <- y_bar_treatment + (t_treatment * (s_y_treatment / sqrt(n_treatment))) #Upper confidence bound
 post_treat_confidence_interval_upper
 ```
 We are also 95% confident that the mean count of the bacteria from post-treatment is between `r post_treat_confidence_interval_lower` and `r post_treat_confidence_interval_upper`.
@@ -217,9 +221,9 @@ Using our regression line, we would expect the post-treatment bacteria count to 
 
 ## Part D
 
-Estimate the standard error of the estimate in part(c). Since we are predicting the y values from x, we should use the formula: Standard Error = $\sqrt{\frac{MSE}{n}}$. Now MSE = $\frac{SSE}{n-2}$ and SSE = $\frac{s_y^2 * (n-1)}{\sqrt{1-r^2}}$. We are showing all of this below.
+Estimate the standard error of the estimate in part(c). Since we are predicting the y values from x, we should use the formula: Standard Error = $\sqrt{\frac{MSE}{n}}$. Now MSE = $\frac{SSE}{n-2}$ and SSE = $(\sum (y_i - \bar{y})^2) * (1-r^2)  = ((s_y^2) * (n-1)) * (1-r^2)$. We are showing all of this below.
 ```{r problem 2 part d}
-sum_of_squares_error_treatment <- ((s_y_treatment ** 2) * (n_treatment - 1)) * sqrt(1 - r_treatment ** 2)
+sum_of_squares_error_treatment <- (s_y_treatment ** 2) * (n_treatment - 1) * (1 - (r_treatment ** 2))
 mean_square_error_treatment <- sum_of_squares_error_treatment / (n_treatment - 2)
 standard_error_treatment <- sqrt(mean_square_error_treatment / n_treatment)
 standard_error_treatment
@@ -241,12 +245,12 @@ Here we can see that there is a difference between the standard error and the st
 
 ## Part G
 
-Use the regression line to obtain 95% confidence limits for the mean post-treatment score among those with average pre-treatment levels of the bacteria (x = $\bar{x}$). Compare the width of this interval with that from part (a). Explain, briefly, how and why it is different.
+Use the regression line to obtain 95% confidence limits for the mean post-treatment score among those with average pre-treatment levels of the bacteria (x = $\bar{x}$). Remember, the formula we will use is confidence interval = $\bar{y} \pm t_{\alpha / 2, n-2} * SE_y$. We use t instead of z for our test-statistic since the population standard deviation is unknown ($\sigma$ is not known). Compare the width of this interval with that from part (a). Explain, briefly, how and why it is different.
 ```{r problem 2 part g}
-t_treatment <- 2.048 # This is the t critical value with a 95% confidence interval with n-2 (or 30-2=28) degrees of freedom
-lower_new_conf_interval <- y_bar_treatment - t_treatment * standard_error_treatment
-lower_new_conf_interval
-upper_new_conf_interval <- y_bar_treatment + t_treatment * standard_error_treatment
-upper_new_conf_interval
+lower_new_conf_interval <- average_post - (t_treatment * standard_error_treatment) 
+lower_new_conf_interval # Lower confidence bound
+
+upper_new_conf_interval <- average_post + (t_treatment * standard_error_treatment) 
+upper_new_conf_interval # Upper confidence bound
 ```
-We are 95% confident that the mean count of the bacteria from post-treatment is between `r lower_new_conf_interval` and `r upper_new_conf_interval`, using the least squares regression model to try to predict this. From part (a) 95% confident that the mean count of the bacteria from post-treatment is between `r post_treat_confidence_interval_lower` and `r post_treat_confidence_interval_upper`. We can see that by using regression, we have a narrower confidence interval and thus we now have a more precise estimate on the population parameter, which is the mean number of bacteria post-treatment.
+We are 95% confident that the mean count of the bacteria from post-treatment is between `r lower_new_conf_interval` and `r upper_new_conf_interval`, using the least squares regression model to try to predict this. From part (a), we were 95% confident that the mean count of the bacteria from post-treatment is between `r post_treat_confidence_interval_lower` and `r post_treat_confidence_interval_upper`. We can see that by using regression, we have a narrower confidence interval and thus we now have a more precise estimate on the population parameter, which is the mean number of bacteria post-treatment. This is a good thing, since our goal is trying our best to estimate the population parameter and a narrower confidence interval (or smaller standard error) is what we want when making these estimates.
