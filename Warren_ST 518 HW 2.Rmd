@@ -51,7 +51,7 @@ As we can see from our summary chart, we can see that the least squares estimate
 
 ### Part ii
 
-As we can see from our summary chart, we can see that the standard error for our slope is 18.32.
+As we can see from our summary chart, we can see that the standard error for our slope (or $SE(\hat{\beta_1})$) is 18.32. This is found by lining up the `Std. Error` column with the `bedrooms` row.
 
 ### Part iii
 
@@ -66,35 +66,12 @@ We can use the regression model to estimate difference in average home price bet
 
 Thus we can say the difference between them is $(4-2)\hat{\beta_1} = 2*\hat{\beta_1}$. We know that $\hat{\beta_1}$ = `r priceForBedrooms$coefficients[[2]]*1000` (our slope was given in thousands of dollars), so our predicted difference in pricing between a 2 and 4 bedroom house is 2 * `r priceForBedrooms$coefficients[[2]]` = `r format(round(priceForBedrooms$coefficients[[2]] * 1000 * 2, 2), scientific = F)` dollars more for the 4 bedroom house than a 2 bedroom house.
 
-Now to find the standard error in the difference between a 2 and 4 bedroom house, we can say that 
-$$\hat{SE}(\hat{\mu}(x_0-x_1))$$ 
-$$= \sqrt{(\hat{SE}(\hat{\mu}(x_0)))^2 + (\hat{SE}(\hat{\mu}(x_1)))^2}$$
-$$= \sqrt{\sqrt{MSE(\frac{1}{n}+\frac{(x_0-\bar{x})^2}{\sum(x_i-\bar{x})^2})}^2 + \sqrt{MSE(\frac{1}{n}+\frac{(x_1-\bar{x})^2}{\sum(x_i-\bar{x})^2})}^2}$$
-$$= \sqrt{MSE(\frac{1}{n}+\frac{(x_0-\bar{x})^2}{\sum(x_i-\bar{x})^2}) + MSE(\frac{1}{n}+\frac{(x_1-\bar{x})^2}{\sum(x_i-\bar{x})^2})}$$
-$$= \sqrt{MSE(\frac{1}{n}+\frac{(x_0-\bar{x})^2}{\sum(x_i-\bar{x})^2} + \frac{1}{n}+\frac{(x_1-\bar{x})^2}{\sum(x_i-\bar{x})^2})}$$
-$$= \sqrt{MSE(\frac{2}{n}+\frac{(x_0-\bar{x})^2}{\sum(x_i-\bar{x})^2}+\frac{(x_1-\bar{x})^2}{\sum(x_i-\bar{x})^2})}$$
-In the code chunk below we are solving for the $\hat{SE}(\hat{\mu}(x_0-x_1))$. Please use the following code: `((summary(priceForBedrooms)$sigma) ** 2)` which will provide us with our MSE value.
-```{r possible formula for MSE testing}
-# Plug in the values of x_0 and x_1
-x_0 = 4
-x_1 = 2
+Now to find the standard error in the difference between a 2 and 4 bedroom house, we can say that there are two population means to consider:
 
-# Solve the MSE(mu(x_0-x_1))
-se_x0_subtract_x1 <- sqrt(
-  ((summary(priceForBedrooms)$sigma) ** 2) * (
-    (2 / nrow(houses)) + (
-      ((x_0 - mean(houses$bedrooms)) ** 2) / (sum((houses$bedrooms - mean(houses$bedrooms)) ** 2))
-    ) + (
-      ((x_1 - mean(houses$bedrooms)) ** 2) / (sum((houses$bedrooms - mean(houses$bedrooms)) ** 2))
-    )
-  )
-)
+- $$\mu(x=4) = \beta_0 + \beta_1(4)$$
+- $$\mu(x=2) = \beta_0 + \beta_1(2)$$
 
-# Print the result
-se_x0_subtract_x1
-```
-
-As we can see, the $\hat{SE}(\hat{\mu}(x_0-x_1))$ = `r se_x0_subtract_x1`. So our standard error for our difference is `r se_x0_subtract_x1`.
+As we can see, the difference between $\mu(4)$ and $\mu(2)$ is $2*\beta_1$. The standard error of this difference then is $2 * SE(\hat{\beta_1})$. We saw from part ii that the standard error of the slope was 18.32, which is the same as saying the $SE(\hat{\beta_1})$. Thus, we should do 2 * 18.32 to get $2 * SE(\hat{\beta_1})$ which is `r 18.32 * 2`. Therefore, the standard error for the estimated difference is `r 18.32 * 2`.
 
 ## Part B
 
@@ -108,7 +85,7 @@ summary(priceForBedroomsAndLiving)
 
 As we can see from our summary table, the least squares estimate of the partial slope for `bedrooms` is `r priceForBedroomsAndLiving$coefficients[[2]]`.
 
-## Part ii
+### Part ii
 
 We can see that the estimated partial slope for `bedrooms` is different from
 the estimated slope in **part (a)**. When adding another explanatory variable our partial slopes can be different from that when we do simple linear regression with our slope being the only variable in question. Before our interpretation for our simple linear regression on `bedrooms` was that for each additional bedroom that was added to the house we predicted that the house's price would go `r ifelse(priceForBedrooms$coefficients[[2]] < 0, "down", "up")` by `r ifelse(priceForBedrooms$coefficients[[2]] < 0, -1 * priceForBedrooms$coefficients[[2]], priceForBedrooms$coefficients[[2]])` thousands of dollars. Now with our multiple linear regression model, our partial slope for bedrooms is saying that if we keep our square footage constant (that is comparing houses with the same square footage) then we expect our house price to go `r ifelse(priceForBedroomsAndLiving$coefficients[[2]] < 0, "down", "up")` by `r ifelse(priceForBedroomsAndLiving$coefficients[[2]] < 0, -1 * priceForBedroomsAndLiving$coefficients[[2]], priceForBedroomsAndLiving$coefficients[[2]])` thousands of dollars for each one addtional bedroom added. In this new case, we have to make sure that we keep our square footage of a house at a constant so we can see just the affect bedrooms have. As in our simple linear regression case, we didn't have to worry about square footage as we were just looking at the number of bedrooms in the house and having that explain (and predict) the house value.
