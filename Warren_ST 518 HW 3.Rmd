@@ -111,7 +111,7 @@ Here we are going to want to obtain the partial correlation coefficient between 
 
 ## Part B
 
-Here we are going to want to obtain the partial correlation coefficient between `Volume` and `Height` after adjusting for linear dependence on `Girth`. As we can see from our table above showing the partial correlation coefficient values, we can see that the partial correlation coefficient between `Volume` and `Height` after adjusting for linear dependence on `Girth` is `r pcor(trees)$estimate[2]`. We can find this value by looking at the `$estimate` part of the table and then finding where `Volume` and `Height` match up in the table. That is how we find our value to be `r pcor(trees)$estimate[2]`.
+Here we are going to want to obtain the partial correlation coefficient between `Volume` and `Height` after adjusting for linear dependence on `Girth`. As we can see from our table above showing the partial correlation coefficient values, we can see that the partial correlation coefficient between `Volume` and `Height` after adjusting for linear dependence on `Girth` is `r pcor(trees)$estimate[6]`. We can find this value by looking at the `$estimate` part of the table and then finding where `Volume` and `Height` match up in the table. That is how we find our value to be `r pcor(trees)$estimate[6]`.
 
 ## Part C
 
@@ -122,8 +122,8 @@ We are going to try to find which two models the partial correlation coefficient
 
 Since we know that the variables in question are `Volume` (which is our $Y$ variable) and `Girth` (our $X_1$ variable), we can plug that in for our models in this case with only two predictors. Thus the two models we are comparing which is used for our calculation are:
 
-- $Y = \beta_0 + \beta_2*x_2$ which in words is saying `Volume` = $\beta_0 + beta_2$ * `Height`
-- $X_1 = \beta_0 + \beta_2*x_2$ which in words is saying `Girth` = $\beta_0 + beta_2$ * `Height`
+- $Y = \beta_0 + \beta_2*x_2$ which in words is saying `Volume` = $\beta_0 + \beta_2$ * `Height`
+- $X_1 = \beta_0 + \beta_2*x_2$ which in words is saying `Girth` = $\beta_0 + \beta_2$ * `Height`
 
 We will then get the residuals from both models and find the partial correlation by finding the correlation between $e_{y*2}$ and $e_{1*2}$.
 
@@ -139,7 +139,7 @@ Here we are trying to find the appropriate t-statistic to perform our test. What
 
 We also know that our Sum of Squares for `supp` is equal to the Type I SS in our chart for `supp`. As we can see this is equal to 24.2. Our Mean Square value for `supp` is equal to the sum of squares for `supp` divided by the degrees of freedom for `supp` which is equal to $\frac{24.2}{1} = 24.2$. 
 
-Now for our sum of squares for `Error`. This is equal to the Total sum of squares minus the sum of squares for `supp` which is equal to $2166.2-24.2 = $`r 2166.2-24.2`. Our mean square error is just taking `r 2166.2-24.2` (or the sum of squares error value) and dividing it by the degrees of freedom for `Error`. Therefore we can see that our mean squared error is equal to $\frac{2166.2-24.2}{18} =$ `r (2166.2-24.2) / 18`. 
+Now for our sum of squares for `Error`. This is equal to the Total sum of squares minus the sum of squares for `supp` which is equal to $2166.2-24.2 =$ `r 2166.2-24.2`. Our mean square error is just taking `r 2166.2-24.2` (or the sum of squares error value) and dividing it by the degrees of freedom for `Error`. Therefore we can see that our mean squared error is equal to $\frac{2166.2-24.2}{18} =$ `r (2166.2-24.2) / 18`. 
 
 Lastly we need to get our F-value and p-value to complete the ANOVA table. Our F-value is just the mean squared value of `supp` divided by the mean square `Error`. Therefore we can see that the F-value is equal to $F = \frac{24.2}{\frac{2166.2-24.2}{18}} =$ `r 24.2 / ((2166.2-24.2) / 18)`. To find our p-value we are going to use the F-statistic value of `r 24.2 / ((2166.2-24.2) / 18)`, with the numerator degrees of freedom being 1 (the number of predictors) and the denominator degrees of freedom being 18 (the `Error` degrees of freedom). Therefore, we can find the p-value by using the `pf()` function in R by plugging in `pf(24.2 / ((2166.2-24.2) / 18), 1, 18, lower.tail = FALSE)`, which gives us the p-value of `r pf(24.2 / ((2166.2-24.2) / 18), 1, 18, lower.tail = FALSE)`. Now we have completed our ANOVA table for the simple linear regression case for post-test score (`y`) being modeled by if the supplement was given (`supp`). The ANOVA table is below.
 
@@ -165,7 +165,7 @@ Here we can make the ANOVA table by looking at the output. We know that our only
 |Error | 18 | `r 2166.2-2015.30067` | `r (2166.2-2015.30067) / 18` | | |
 |Corrected Total | 19 | 2166.20000 | | | |
 
-Now we are going to find the $R^2$ values. We can see from our ANOVA table where we can say that MS(R) = MS(`z`) and the MS(Tot) = MS(`Corrected Total`). Thus, we can get the $R^2$ by saying that $R^2 = \frac{MS(R)}{MS(Tot)} = \frac{2015.30067}{2166.20000} =$ `r 2015.30067 / 2166.20000`. We can see that our $R^2$ value is equal to `r 2015.30067 / 2166.20000`.
+Now we are going to find the $R^2$ values. We can see from our ANOVA table where we can say that SS(R) = SS(`z`) and the SS(Tot) = SS(`Corrected Total`). Thus, we can get the $R^2$ by saying that $R^2 = \frac{SS(R)}{SS(Tot)} = \frac{2015.30067}{2166.20000} =$ `r 2015.30067 / 2166.20000`. We can see that our $R^2$ value is equal to `r 2015.30067 / 2166.20000`.
 
 # Problem 4
 
@@ -248,7 +248,7 @@ Conduct F-tests comparing the following pairs of models. For each comparison, st
 Here we are testing to see if we should add the quadratic term of rainfall into our model. In this case, we can say that $H_0: \beta_2 = 0$ with the $H_A: \beta_2 \neq 0$. We are going to complete an ANOVA test below to see if we should keep this variable.
 ```{r}
 alpha <- 0.05
-anova(model1_corn, model2_corn)
+print(anova(model1_corn, model2_corn))
 ```
 
 As we can see, our p-value is `r anova(model1_corn, model2_corn)$"Pr(>F)"[[2]]`. This is `r ifelse(anova(model1_corn, model2_corn)$"Pr(>F)"[[2]] < alpha, "less than", "greater than")` our alpha level at 0.05. Therefore, we should `r ifelse(anova(model1_corn, model2_corn)$"Pr(>F)"[[2]] < alpha, "reject", "fail to reject")` our null hypothesis as we  `r ifelse(anova(model1_corn, model2_corn)$"Pr(>F)"[[2]] < alpha, "have", "do not have")` statistically significant evidence to conclude that $\beta_2 \neq 0$. Therefore, we should use  `r ifelse(anova(model1_corn, model2_corn)$"Pr(>F)"[[2]] < alpha, "Model 2", "Model 1")` when doing our analysis due to $\beta_2$  `r ifelse(anova(model1_corn, model2_corn)$"Pr(>F)"[[2]] < alpha, "having", "not having")` an effect on our model.
@@ -258,7 +258,7 @@ As we can see, our p-value is `r anova(model1_corn, model2_corn)$"Pr(>F)"[[2]]`.
 Here we are testing to see if we should add the quadratic term of rainfall into our model. In this case, we can say that $H_0: \beta_2 = \beta_4 = \beta_5= 0$ with the $H_A: \beta_2 \neq \beta_4 \neq \beta_5 \neq 0$. We are going to complete an ANOVA test below to see if we should keep these variables.
 ```{r}
 alpha <- 0.05
-anova(model3_corn, model4_corn)
+print(anova(model3_corn, model4_corn))
 ```
 
 As we can see, our p-value is `r anova(model3_corn, model4_corn)$"Pr(>F)"[[2]]`. This is `r ifelse(anova(model3_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "less than", "greater than")` our alpha level at 0.05. Therefore, we should `r ifelse(anova(model3_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "reject", "fail to reject")` our null hypothesis as we  `r ifelse(anova(model3_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "have", "do not have")` statistically significant evidence to conclude that $\beta_2 \neq \beta_4 \neq \beta_5 \neq 0$. Therefore, we should use  `r ifelse(anova(model3_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "Model 4", "Model 3")` when doing our analysis due to $\beta_2, \beta_4,$ and/or $\beta_5$  `r ifelse(anova(model3_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "having", "not having")` an effect on our model.
@@ -268,7 +268,7 @@ As we can see, our p-value is `r anova(model3_corn, model4_corn)$"Pr(>F)"[[2]]`.
 Here we are testing to see if we should add the quadratic term of rainfall into our model. In this case, we can say that $H_0: \beta_2 = \beta_3 = 0$ with the $H_A: \beta_2 \neq \beta_3 \neq 0$. We are going to complete an ANOVA test below to see if we should keep these variables.
 ```{r}
 alpha <- 0.05
-anova(model4_corn, model5_corn)
+print(anova(model4_corn, model5_corn))
 ```
 
 As we can see, our p-value is `r anova(model4_corn, model5_corn)$"Pr(>F)"[[2]]`. This is `r ifelse(anova(model4_corn, model5_corn)$"Pr(>F)"[[2]] < alpha, "less than", "greater than")` our alpha level at 0.05. Therefore, we should `r ifelse(anova(model4_corn, model5_corn)$"Pr(>F)"[[2]] < alpha, "reject", "fail to reject")` our null hypothesis as we  `r ifelse(anova(model4_corn, model5_corn)$"Pr(>F)"[[2]] < alpha, "have", "do not have")` statistically significant evidence to conclude that $\beta_2 \neq \beta_3 \neq 0$. Therefore, we should use  `r ifelse(anova(model4_corn, model5_corn)$"Pr(>F)"[[2]] < alpha, "Model 5", "Model 4")` when doing our analysis due to $\beta_2$ and/or $\beta_3$  `r ifelse(anova(model4_corn, model5_corn)$"Pr(>F)"[[2]] < alpha, "having", "not having")` an effect on our model.
@@ -278,7 +278,7 @@ As we can see, our p-value is `r anova(model4_corn, model5_corn)$"Pr(>F)"[[2]]`.
 Here we are testing to see if we should add the quadratic term of rainfall into our model. In this case, we can say that $H_0: \beta_3 = 0$ with the $H_A: \beta_3 \neq 0$. We are going to complete an ANOVA test below to see if we should keep this variable.
 ```{r}
 alpha <- 0.05
-anova(model1_corn, model3_corn)
+print(anova(model1_corn, model3_corn))
 ```
 
 As we can see, our p-value is `r anova(model1_corn, model3_corn)$"Pr(>F)"[[2]]`. This is `r ifelse(anova(model1_corn, model3_corn)$"Pr(>F)"[[2]] < alpha, "less than", "greater than")` our alpha level at 0.05. Therefore, we should `r ifelse(anova(model1_corn, model3_corn)$"Pr(>F)"[[2]] < alpha, "reject", "fail to reject")` our null hypothesis as we  `r ifelse(anova(model1_corn, model3_corn)$"Pr(>F)"[[2]] < alpha, "have", "do not have")` statistically significant evidence to conclude that $\beta_3 \neq 0$. Therefore, we should use  `r ifelse(anova(model1_corn, model3_corn)$"Pr(>F)"[[2]] < alpha, "Model 3", "Model 1")` when doing our analysis due to $\beta_3$  `r ifelse(anova(model1_corn, model2_corn)$"Pr(>F)"[[2]] < alpha, "having", "not having")` an effect on our model.
@@ -288,7 +288,7 @@ As we can see, our p-value is `r anova(model1_corn, model3_corn)$"Pr(>F)"[[2]]`.
 Here we are testing to see if we should add the quadratic term of rainfall into our model. In this case, we can say that $H_0: \beta_3 = \beta_4 = \beta_5= 0$ with the $H_A: \beta_3 \neq \beta_4 \neq \beta_5 \neq 0$. We are going to complete an ANOVA test below to see if we should keep these variables.
 ```{r}
 alpha <- 0.05
-anova(model2_corn, model4_corn)
+print(anova(model2_corn, model4_corn))
 ```
 
 As we can see, our p-value is `r anova(model2_corn, model4_corn)$"Pr(>F)"[[2]]`. This is `r ifelse(anova(model2_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "less than", "greater than")` our alpha level at 0.05. Therefore, we should `r ifelse(anova(model2_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "reject", "fail to reject")` our null hypothesis as we  `r ifelse(anova(model2_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "have", "do not have")` statistically significant evidence to conclude that $\beta_3 \neq \beta_4 \neq \beta_5 \neq 0$. Therefore, we should use  `r ifelse(anova(model2_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "Model 4", "Model 2")` when doing our analysis due to $\beta_3, \beta_4,$ and/or $\beta_5$  `r ifelse(anova(model3_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "having", "not having")` an effect on our model.
@@ -298,7 +298,7 @@ As we can see, our p-value is `r anova(model2_corn, model4_corn)$"Pr(>F)"[[2]]`.
 Here we are testing to see if we should add the quadratic term of rainfall into our model. In this case, we can say that $H_0: \beta_2 = \beta_5= 0$ with the $H_A: \beta_2 \neq \beta_5 \neq 0$. We are going to complete an ANOVA test below to see if we should keep these variables.
 ```{r}
 alpha <- 0.05
-anova(model6_corn, model4_corn)
+print(anova(model6_corn, model4_corn))
 ```
 
 As we can see, our p-value is `r anova(model6_corn, model4_corn)$"Pr(>F)"[[2]]`. This is `r ifelse(anova(model6_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "less than", "greater than")` our alpha level at 0.05. Therefore, we should `r ifelse(anova(model6_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "reject", "fail to reject")` our null hypothesis as we  `r ifelse(anova(model6_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "have", "do not have")` statistically significant evidence to conclude that $\beta_2 \neq \beta_5 \neq 0$. Therefore, we should use  `r ifelse(anova(model6_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "Model 4", "Model 6")` when doing our analysis due to $\beta_2$ and/or $\beta_5$  `r ifelse(anova(model6_corn, model4_corn)$"Pr(>F)"[[2]] < alpha, "having", "not having")` an effect on our model.
@@ -311,8 +311,9 @@ We are looking to see if Model 2 is nested in Model 3. And while we can put the 
 
 Use Model 1 and Model 6 to separately estimate the increase in yield when rainfall increases by 1 inch in the year 1900.
 
-- Model 1: Here we know that $E(Y|x_1) = \beta_0 + \beta_1 * x_1$ where $x_1$ is rainfall. We know that $\beta_0$ remains constant, so we are only looking at $\beta_1$ which is telling us that we expect the yield to increase by $\beta_1$ amount per one increase in units for $x_1$ (which in this case is one inch of rainfall). Thus, our estimated increase in yield in 1900 for each increase of inch of rainfall is just $\beta_1$ which is `r model1_corn$coefficients[[2]]`.
-- Model 6: Here we know that $E(Y|x_1, x_3) = \beta_0 + \beta_1 * x_1 + \beta_3 * x_3 + \beta_4 * x_1 * x_3$, where $x_1$ is rainfall and $x_3$ is year. Since year is constant, we can plug in 1900 for each of the $x_3$'s to get our new model. Now we can see that $E(Y|x_1, x_3 = 1900) = \beta_0 + \beta_1 * x_1 +\beta_3 * 1900 + \beta_4 * x_1 * 1900 = (\beta_0 + 1900*\beta_3) + (\beta_1 + 1900 * \beta_4) * x_1$. The left side of the equation $(\beta_0 + 1900*\beta_3)$ is a constant so we only need to look at the right side of $(\beta_1 + 1900 * \beta_4) * x_1$ to find out what we would expect our estimated increase in yield in 1900 for each increase of inch in rainfall is just $(\beta_1 + 1900 * \beta_4)$ (where $\beta_1$ = `r model6_corn$coefficients[[2]]` and $\beta_4$ = `r model6_corn$coefficients[[2]]`) which is `r model6_corn$coefficients[[2]] + 1900 * model6_corn$coefficients[[4]]`. Therefore, we would expect our estimated increase in yield in 1900 for each increase of inch in rainfall is `r model6_corn$coefficients[[2]] + 1900 * model6_corn$coefficients[[4]]`.
+- Model 1: Here we know that $E(Y|x_1) = \beta_0 + \beta_1 * x_1$ where $x_1$ is rainfall. We know that $\beta_0$ remains constant, so we are only looking at $\beta_1$ which is telling us that we expect the yield to increase by $\beta_1$ amount per one increase in units for $x_1$ (which in this case is one inch of rainfall). Thus, our estimated increase in yield in 1900 for each increase of one inch of rainfall is just $\beta_1$ which is `r model1_corn$coefficients[[2]]`.
+
+- Model 6: Here we know that $E(Y|x_1, x_3) = \beta_0 + \beta_1 * x_1 + \beta_3 * x_3 + \beta_4 * x_1 * x_3$, where $x_1$ is rainfall and $x_3$ is year. Since year is constant, we can plug in 1900 for each of the $x_3$'s to get our new model. Now we can see that $E(Y|x_1, x_3 = 1900) = \beta_0 + \beta_1 * x_1 +\beta_3 * 1900 + \beta_4 * x_1 * 1900 = (\beta_0 + 1900*\beta_3) + (\beta_1 + 1900 * \beta_4) * x_1$. The left side of the equation $(\beta_0 + 1900*\beta_3)$ is a constant so we only need to look at the right side of $(\beta_1 + 1900 * \beta_4) * x_1$ to find out what we would expect our estimated increase in yield in 1900 for each increase of inch in rainfall is just $(\beta_1 + 1900 * \beta_4)$ (where $\beta_1$ = `r model6_corn$coefficients[[2]]` and $\beta_4$ = `r model6_corn$coefficients[[4]]`) which is `r model6_corn$coefficients[[2]] + 1900 * model6_corn$coefficients[[4]]`. Therefore, we would expect our estimated increase in yield in 1900 for each increase of one inch in rainfall is `r model6_corn$coefficients[[2]] + 1900 * model6_corn$coefficients[[4]]`.
 
 ## Part E
 
@@ -323,10 +324,16 @@ First let us take a look at Model 3 again by looking at some of its summary stat
 summary(model3_corn)
 ```
 
-Using the t-statistics for partial slopes we can see that both offer p-values less than 0.05, which means we have statistically significant evidence to say that both estimated regression coefficients differ significantly from 0. If we control for rain, we can look at our output to see that our partial slope for year is `r summary(model3_corn)$coefficients[3, 1]`, which means that we expect the mean corn yield to increase by `r summary(model3_corn)$coefficients[3, 1]` from 1890-1927, if we control for rainfall. We can also see that the standard error for `year` is `r summary(model3_corn)$coefficients[3, 2]`, so our standard error of our estimate here is `r summary(model3_corn)$coefficients[3, 2]`. 
+Using the t-statistics for partial slopes we can see that both offer p-values less than 0.05, which means we have statistically significant evidence to say that both estimated regression coefficients differ significantly from 0. 
+
+If we control for rain, we can look at our output to see that our partial slope for year is `r summary(model3_corn)$coefficients[3, 1]`, which means that we expect the mean corn yield to increase by `r summary(model3_corn)$coefficients[3, 1]` for each increase of one year from 1890-1927, if we control for rainfall. We can also see that the standard error for `year` is `r summary(model3_corn)$coefficients[3, 2]`, so our standard error of our estimate here is `r summary(model3_corn)$coefficients[3, 2]`. 
 
 Corn yield can increase over time, despite looking at rainfall for a number of reasons. First from a data standpoint, we can look at the following in which we can see that some of the lower outliers occur in earlier years. 
 ```{r}
 plot(corn_data$year, corn_data$yield)
 ```
-As we can see, there are some dips in the later 1800s to early 1900s. Since we are performing a line of best fit, we would assume that `year` would produce an increasing amount of yield as those select years have a large impact, given the smallish sample size. We can also see in later years that a couple have some spikes further making our model believe that year is a factor, despite most of the time `year` having a steady amount. Due to what has been described, this is why that `year` appears to cause an increasing corn yield, even after controlling the rainfall.
+As we can see, there are some dips in the later 1800s to early 1900s. Since we are performing a line of best fit, we would assume that `year` would produce an increasing amount of yield as those select years have a large impact, given the smallish sample size. We can also see in later years that a couple have some spikes further making our model believe that year is a factor (and causing this increasing trend), despite most of the time `year` having a steady amount. 
+
+From a non-statistics standpoint, there could also be the confounding variable that technology is getting better over time; as a result, this is increasing corn yield. Cropping techniques might be getting better as well as things tend to evolve over time. 
+
+Due to what has been described, this is why that `year` appears to cause an increasing corn yield, even after controlling the rainfall.
