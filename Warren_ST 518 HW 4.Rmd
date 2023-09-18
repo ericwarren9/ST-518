@@ -1,0 +1,219 @@
+---
+title: "ST 518 Homework 4"
+author: "Eric Warren"
+date: "September 22, 2023"
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+options(scipen = 999)
+```
+
+```{r output setup, eval=FALSE, echo=FALSE}
+# This code allows us to render a pdf document
+rmarkdown::render("~/ST-518/Warren_ST 518 HW 4.Rmd", 
+              output_format = "pdf_document", 
+              output_options = list(
+                toc = TRUE, 
+                toc_depth = 3,
+                number_sections = TRUE,
+                df_print = "tibble"
+                )
+              )
+```
+
+# Problem 1
+
+First we are going to read in the `battery` data and will show what it looks like. 
+```{r read in battery}
+library(tidyverse)
+battery <- read_table("battery.txt")
+battery$TypeBat <- factor(battery$TypeBat)
+battery
+```
+
+## Part A
+
+Write out the factorial effects model for the LPUC variable (lifetime per unit cost) that allows for the mean to vary across battery types. Include a random variable for an error term that has the same variance for all four battery types.
+
+We know when the variances should be the same for all treatments groups that our model for One Factor Experiments should be $Y_{ij} = \mu + \tau_i + E_{ij}$ for $i = 1, 2, ..., t$ and $j = 1, 2, ..., n$ where $t$ is the number of treatments and $n$ is the sample size in each treatment. Also $E_{ij}$ are i.i.d $N(0, \sigma^2)$ errors. In this case, $t = 4$ and $n = 4$ given that there are 4 battery types and 4 batteries in each type. So knowing all of this our model should be written as $Y_{ij} = \mu + \tau_i + E_{ij}$ for $i = 1, 2, 3, 4$ and $j = 1, 2, 3, 4$ and $E_{ij}$ are i.i.d $N(0, \sigma^2)$ errors.
+
+## Part B
+
+Report the mean and variance for the 4 measurements from each of the four battery types.
+
+We can do this by using the `group_by()` function in R to group all the data by battery type and then use the `summarize()` function to find the `mean` and `variance` of `LPUC` value by each battery type. I am assuming sample variance and sample mean in the question so our functions of `mean()` get the sample mean and `var()` get the sample variance.
+```{r mean and variance of battery types}
+mean_variance_output <- battery %>%
+  group_by(TypeBat) %>%
+  summarize(mean = mean(LPUC), variance = var(LPUC))
+mean_variance_output
+```
+
+Here we can see the mean and variance of each battery type.
+
+## Part C
+
+Either by hand or using software, obtain the ANOVA table for your model. It should have three rows for Battery type, error and the corrected total sum of squares. 
+
+Here we are going to use our `anova()` function to get an ANOVA table for battery types.
+```{r anova battery types}
+battery_model <- lm(LPUC ~ TypeBat, battery)
+anova(battery_model)
+```
+
+This ANOVA table is basically complete. We just have to get the corrected total degrees of freedom and sum of squares. The degrees of freedom is just $n*t-1 = 4*4-1 = 15$ and this makes sense because the error degrees of freedom is `r anova(battery_model)$Df[[2]]` and the battery type degrees of freedom is `r anova(battery_model)$Df[[1]]` so added together is `r anova(battery_model)$Df[[1]] + anova(battery_model)$Df[[2]]`, which is what we expected. To get the Sum of Squares Total we add the Sum of Squares for `Battery Type` and the Sum of Squares for `Error`. The Sum of Squares for `Battery Type` is `r anova(battery_model)$"Sum Sq"[[1]]` and the Sum of Squares for `Error` is `r anova(battery_model)$"Sum Sq"[[2]]` so added together gets us `r anova(battery_model)$"Sum Sq"[[1]] + anova(battery_model)$"Sum Sq"[[2]]`, which is our Sum of Squares for `Corrected Total`. Thus, we have all the values we need for our final ANOVA table. 
+
+|Source | DF | SS | MS | F-value | p-value
+|----|:-----:|:-----:|:-----:|:------:|-----:|
+|Battery Type | `r anova(battery_model)$Df[[1]]` | `r anova(battery_model)$"Sum Sq"[[1]]` | `r anova(battery_model)$"Mean Sq"[[1]]` | `r anova(battery_model)$"F value"[[1]]` | `r anova(battery_model)$"Pr(>F)"[[1]]` |
+|Error | `r anova(battery_model)$Df[[2]]` | `r anova(battery_model)$"Sum Sq"[[2]]` | `r anova(battery_model)$"Mean Sq"[[2]]` | | |
+|Corrected Total | `r anova(battery_model)$Df[[1]] + anova(battery_model)$Df[[2]]` | `r anova(battery_model)$"Sum Sq"[[1]] + anova(battery_model)$"Sum Sq"[[2]]` | | | |
+
+## Part D
+
+Two versions of the fitted model from PROC GLM, with parameter estimates $\hat{\mu}, \hat{\tau_1}, \hat{\tau_2}, \hat{\tau_3}, \hat{\tau_4}$  are
+given. Use these models, say `fit1` and `fit2` to report estimates of each of the linear combinations of parameters below.
+
+|Parameter | `fit1` | `fit2` |
+|----|:-----:|-----:|
+|$\theta_1 = \mu + \tau_1$ | $496.25+74.50 =$ `r 496.25+74.5`| $570.75 + 0=$ `r 570.75+0`|
+|$\theta_2 = \tau_1$ | 74.50 | 0|
+|$\theta_3 = \tau_1 - \tau_3$ | $-63.25-74.50=$ `r -63.25-74.5` | -137.75|
+|$\theta_4 = \tau_3$ | -63.25 | -137.75|
+|$\theta_5 = \mu + \tau_4$ | $496.25+0=$ `r 496.25+0` | $570.75+(-74.5)=$ `r 570.75+(-74.5)`|
+|$\theta_6 = \mu + \frac{1}{4}\sum_{1}^{4} \tau_i$ | $496.25 + \frac{1}{4}*(74.5+364.25+(-63.25)+0)=$ `r 496.25 + (0.25 * (74.5+364.25+(-63.25)+0))`| $570.75 + \frac{1}{4}*(0+289.75+(-137.75)+(-74.5))=$ `r 570.75 + (0.25 * (0+289.75+(-137.75)+(-74.5)))`|
+|$\theta_7 = \tau_2 - \tau_4$ | $364.25-0=$ `r 364.25-0`| $289.75-(-74.5)=$ `r 289.75-(-74.5)`|
+
+## Part E
+
+Which of the seven parameters considered in the table from **part (d)** are uniquely estimable? For each estimable parameter, give a linear combination of the data that has the parameter as its expectation. 
+
+We have the following linear combinations that exist:
+$$\begin{pmatrix} 1 & 1 & 0 & 0 & 0 \\ 1 & 0 & 1 & 0 & 0 \\ 1 & 0 & 0 & 1 & 0 \\ 1 & 0 & 0 & 0 & 1 \end{pmatrix}$$
+
+Knowing this, we can look at all of them one by one to figure this out.
+
+### Part i
+
+We know that $\theta_1$ is estimable. This is because the linear combination of $(1, 1, 0, 0, 0)$ can be used to get this parameter expectation. 
+
+### Part ii
+
+We know that $\theta_2$ is **NOT** estimable. This is because the linear combination of $(0, 1, 0, 0, 0)$ has be used to get this parameter expectation and there is no way to manipulate the data linear combinations to get to the one we need for this.
+
+### Part iii
+
+We know that $\theta_3$ is an estimable. This is because the linear combination of $(0, 1, 0, -1, 0)$ can be used to get this parameter expectation. We can take the linear combination of $(1, 1, 0, 0, 0)$ minus the linear combination of $(1, 0, 0, 1, 0)$ to equal $(0, 1, 0, -1, 0)$.
+
+### Part iv
+
+We know that $\theta_4$ is **NOT** estimable. This is because the linear combination of $(0, 0, 0, 1, 0)$ has be used to get this parameter expectation and there is no way to manipulate the data linear combinations to get to the one we need for this.
+
+### Part v
+
+We know that $\theta_5$ is estimable. This is because the linear combination of $(1, 0, 0, 0, 1)$ can be used to get this parameter expectation. 
+
+### Part vi
+
+We know that $\theta_6$ is estimable. This is because the linear combination of $(1, \frac{1}{4}, \frac{1}{4}, \frac{1}{4}, \frac{1}{4})$ can be used to get this parameter expectation. We can get this by adding linear combination of $1, 1, 0, 0, 0)$ to $(1, 0, 1, 0, 0)$ to $(1, 0, 0, 1, 0)$ to $(1, 0, 0, 0, 1)$ to to get $(4, 1, 1, 1, 1)$. Then we can multiply the scalar of $\frac{1}{4}$ to get the linear combination of $\frac{1}{4}(4, 1, 1, 1, 1)$ to get $(1, \frac{1}{4}, \frac{1}{4},  \frac{1}{4},  \frac{1}{4})$. Thus, we have shown this estimable.
+
+### Part vii
+
+We know that $\theta_7$ is an estimable. This is because the linear combination of $(0, 0, 1, 0, -1)$ can be used to get this parameter expectation. We can take the linear combination of $(1, 0, 1, 0, 0)$ minus the linear combination of $(1, 0, 0, 0, 1)$ to equal $(0, 0, 1, 0, -1)$.
+
+## Part F
+
+Is $\theta_1$ a contrast? How about $\theta_3$?
+
+We know that a contrast is when the $\sum_{1}^{t} c_j = 0$. 
+
+From **part e**, we know that $\theta_1$ has the linear combination of $(1, 1, 0, 0, 0)$. Thus by taking the $\sum_{1}^{t} c_j = \sum_{1}^{4} c_j \neq 0$. We know this because all the values are non-negative (with $c_1 = 1$). So $\theta_1$ is not a contrast. 
+
+From **part e**, we know that $\theta_3$ has the linear combination of $(0, 1, 0, -1, 0)$. Thus by taking the $\sum_{1}^{t} c_j = \sum_{1}^{4} c_j = 1 + 0 - 1 + 0 = 0$. So $\theta_3$ is a contrast.
+
+## Part G
+
+Compute the standard error of $\theta_3 = \bar{y_1} - \bar{y_3}$.
+
+We know that the standard error of $\hat{\theta}$ is $\hat{SE\hat{\theta}} = \sqrt{MS(E) * \sum_{i=1}^{i=t} \frac{c_i^2}{n_i}}$. To find the standard error for $\theta_3$, we know from *part c* that the MS(E) is `r anova(battery_model)$"Mean Sq"[[2]]`. Now to find $\sum_{i=1}^{i=t} \frac{c_i^2}{n_i} = \frac{1^2}{4} + 0 + \frac{-1^2}{4} + 0 = \frac{1}{4} + \frac{1}{4} = \frac{1}{2}$. So, $\hat{SE\hat{\theta_3}} = \sqrt{MS(E) * \sum_{i=1}^{i=t} \frac{c_i^2}{n_i}} =$ (`r anova(battery_model)$"Mean Sq"[[2]]` * $\frac{1}{2}$) $^\frac{1}{2}$ = `r (anova(battery_model)$"Mean Sq"[[2]] * 0.5) ** 0.5`. So $\hat{SE(\hat{\theta_3})} =$ `r (anova(battery_model)$"Mean Sq"[[2]] * 0.5) ** 0.5`.
+
+## Part H
+
+Compute the contrast sum of squares for $\hat{\theta_3}$ and also for the least squares estimator of $\hat{\theta_3} = \bar{y_2} - \bar{y_4}$. Which contrast explains more of the battery type effect, $\hat{\theta_3}$ or $\hat{\theta_7}$?
+
+We know that the $SS(\hat{\theta}) = \frac{\hat{\theta}^2}{\frac{c_1^2}{n_1} + ... + \frac{c_t^2}{n_t}}$ 
+
+Some things we should note that we solved from *part b*:
+
+- $\bar{y_1} =$ `r mean_variance_output$mean[1]`
+- $\bar{y_2} =$ `r mean_variance_output$mean[2]`
+- $\bar{y_3} =$ `r mean_variance_output$mean[3]`
+- $\bar{y_4} =$ `r mean_variance_output$mean[4]`
+
+So we know that $\hat{\theta_3} = \bar{y_1} - \bar{y_3} =$ `r mean_variance_output$mean[1] - mean_variance_output$mean[3]` and $\hat{\theta_7} = \bar{y_2} - \bar{y_4} =$ `r mean_variance_output$mean[2] - mean_variance_output$mean[4]`.
+
+Now we can solve the sum of squares for both $\hat{\theta_3}$ and $\hat{\theta_7}$.
+
+$SS(\hat{\theta_3}) = \frac{\hat{\theta_3}^2}{\frac{c_1^2}{n_1} + ... + \frac{c_t^2}{n_t}} =$ `r (mean_variance_output$mean[1] - mean_variance_output$mean[3])` $^2$ / $(\frac{1^2}{4} + 0 + \frac{-1^2}{4} + 0) =$ `r (mean_variance_output$mean[1] - mean_variance_output$mean[3]) ** 2` / $\frac{1}{2} =$ `r ((mean_variance_output$mean[1] - mean_variance_output$mean[3]) ** 2) / 0.5`. So $SS(\hat{\theta_3}) =$ `r ((mean_variance_output$mean[1] - mean_variance_output$mean[3]) ** 2) / 0.5`.
+
+$SS(\hat{\theta_7}) = \frac{\hat{\theta_7}^2}{\frac{c_1^2}{n_1} + ... + \frac{c_t^2}{n_t}} =$ `r (mean_variance_output$mean[2] - mean_variance_output$mean[4])` $^2$ / $(0 + \frac{1^2}{4} + 0 + \frac{-1^2}{4}) =$ `r (mean_variance_output$mean[2] - mean_variance_output$mean[4]) ** 2` / $\frac{1}{2} =$ `r ((mean_variance_output$mean[2] - mean_variance_output$mean[4]) ** 2) / 0.5`. So $SS(\hat{\theta_7}) =$ `r ((mean_variance_output$mean[2] - mean_variance_output$mean[4]) ** 2) / 0.5`.
+
+The higher sum of squares for $\hat{\theta_7}$ means that the contrast with $\hat{\theta_7}$ explains more of the battery type effect than $\hat{\theta_3}$.
+
+## Part I
+
+Are the contrasts $\theta_3$ and $\theta_7$ orthogonal? What is the covariance of the least squares estimators?
+
+We know that contrasts are orthogonal if $\sum_{i=1}^{t} \frac{c_i*d_i}{n_i} = 0$ For $\theta_3$ the linear combination is (1, 0, -1, 0) and the for $\theta_7$ the linear combination is (0, 1, 0, -1). Therefore $\sum_{i=1}^{t} \frac{c_i*d_i}{n_i} = \frac{1*0}{n_1} + \frac{0*1}{n_2} + \frac{-1*0}{n_3} + \frac{0*-1}{n_4} = 0*0*0*0 = 0$ since $n_i \neq 0$ for $i = 1, 2, ..., t$. Therefore, $\theta_3$ and $\theta_7$ are orthogonal. Moreover, since they are orthogonal, their covariance is equal to 0 since orthogonal values are statistically uncorrelated and moreover independent if normally distributed. Therefore, $\theta_3$ and $\theta_7$ are orthogonal and have a covariance of 0.
+
+# Problem 2
+
+First we are going to read in the `tensile_strength` data and will show what it looks like. 
+```{r read in tensile}
+library(tidyverse)
+tensile_strength <- read_table("tensile_strength.txt")
+tensile_strength$CottonWtPer <- factor(tensile_strength$CottonWtPer)
+tensile_strength
+```
+
+Let $Y_{ij}$ denote the observed tensile strength of unit j from cotton weight percentage level i for i, j = 1, . . . , 5. Consider a linear model for $Y_{ij}$ with factorial effects for cotton weight percentage.
+
+## Part A
+
+Report the sample mean, $\bar{y_i}$ and sample variance, $s_i^2$ for each level of cotton wt. percentage, i.
+
+We can do this by using the `group_by()` function in R to group all the data by cotton weight and then use the `summarize()` function to find the `mean` and `variance` of `TensileStrength` value by each cotton weight type. I am assuming sample variance and sample mean in the question so our functions of `mean()` get the sample mean and `var()` get the sample variance.
+```{r mean and variance of cotton weight types}
+mean_variance_output2 <- tensile_strength %>%
+  group_by(CottonWtPer) %>%
+  summarize(sample_mean = mean(TensileStrength),
+            sample_variance = var(TensileStrength))
+mean_variance_output2
+```
+
+Here we found our sample mean and sample variance of the `tensile strength` for each cotton weight type.
+
+## Part B
+
+Write out a statistical model for $Y_{ij}$ which assumes the response varies normally about a weight specific mean, with constant variance. 
+
+We know when the variances should be the same for all treatments groups that our model for One Factor Experiments should be $Y_{ij} = \mu + \tau_i + E_{ij}$ for $i = 1, 2, ..., t$ and $j = 1, 2, ..., n$ where $t$ is the number of treatments and $n$ is the sample size in each treatment. Also $E_{ij}$ are i.i.d $N(0, \sigma^2)$ errors. In this case, $t = 5$ and $n = 5$ given that there are 4 battery types and 4 batteries in each type. So knowing all of this our model should be written as $Y_{ij} = \mu + \tau_i + E_{ij}$ for $i = 1, 2, 3, 4, 5$ and $j = 1, 2, 3, 4, 5$ and $E_{ij}$ are i.i.d $N(0, \sigma^2)$ errors. 
+
+## Part C
+
+Report the fitted model of the form $\hat{Y_{ij}} = \hat{\mu} + \hat{\tau_i}$ and supply numerical estimates for all location parameters, or functions of location parameters, that would enable a user to predict a future observation for a give cotton weight percentage.
+
+We should look at the values it takes by using the `summary()` function on our fitted model (which uses the `lm()` function). The code is below.
+```{r fitted model for tensile strength}
+tensile_strength_model <- lm(TensileStrength ~ CottonWtPer, tensile_strength)
+summary(tensile_strength_model)
+```
+
+As we can see our model can be written out as $Y_i =$ `r tensile_strength_model$coefficients[[1]]` + `r tensile_strength_model$coefficients[[2]]` * $x_{2i}$ + `r tensile_strength_model$coefficients[[3]]` * $x_{3i}$ + `r tensile_strength_model$coefficients[[4]]` * $x_{4i}$ + `r tensile_strength_model$coefficients[[5]]` * $x_{5i}$ where $x_{ti}$ represents an indicator variable if the specific value matched up with the corresponding treatment $t$ (it is equal to 1 if it does match and 0 if it does not match). Note, $t = 1$ for cotton weight of 15, $t = 2$ for cotton weight of 20, $t = 3$ for cotton weight of 25, $t = 4$ for cotton weight of 30, and $t = 5$ for cotton weight of 35.
+
+## Part D
+
+Using level of significance $\alpha$ = .05, test the null hypothesis that mean tensile strength is constant across the levels of cotton weight percentage considered in this experiment. Provide all the elements of the test ($H_0$, critical value, observed value of the test statistic, conclusion).
+
