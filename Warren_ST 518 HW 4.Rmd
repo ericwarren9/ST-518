@@ -137,7 +137,7 @@ From **part e**, we know that $\theta_3$ has the linear combination of $(0, 1, 0
 
 Compute the standard error of $\theta_3 = \bar{y_1} - \bar{y_3}$.
 
-We know that the standard error of $\hat{\theta}$ is $\hat{SE\hat{\theta}} = \sqrt{MS(E) * \sum_{i=1}^{i=t} \frac{c_i^2}{n_i}}$. To find the standard error for $\theta_3$, we know from *part c* that the MS(E) is `r anova(battery_model)$"Mean Sq"[[2]]`. Now to find $\sum_{i=1}^{i=t} \frac{c_i^2}{n_i} = \frac{1^2}{4} + 0 + \frac{-1^2}{4} + 0 = \frac{1}{4} + \frac{1}{4} = \frac{1}{2}$. So, $\hat{SE\hat{\theta_3}} = \sqrt{MS(E) * \sum_{i=1}^{i=t} \frac{c_i^2}{n_i}} =$ (`r anova(battery_model)$"Mean Sq"[[2]]` * $\frac{1}{2}$) $^\frac{1}{2}$ = `r (anova(battery_model)$"Mean Sq"[[2]] * 0.5) ** 0.5`. So $\hat{SE(\hat{\theta_3})} =$ `r (anova(battery_model)$"Mean Sq"[[2]] * 0.5) ** 0.5`.
+We know that the standard error of $\hat{\theta}$ is $\hat{SE\hat{\theta}} = \sqrt{MS(E) * \sum_{i=1}^{i=t} \frac{c_i^2}{n_i}}$. To find the standard error for $\theta_3$, we know from *part c* that the MS(E) is `r anova(battery_model)$"Mean Sq"[[2]]` and $n_i = 5$ for all $i = 1, 2, ..., t$. Now to find $\sum_{i=1}^{i=t} \frac{c_i^2}{n_i} = \frac{1^2}{4} + 0 + \frac{-1^2}{4} + 0 = \frac{1}{4} + \frac{1}{4} = \frac{1}{2}$. So, $\hat{SE\hat{\theta_3}} = \sqrt{MS(E) * \sum_{i=1}^{i=t} \frac{c_i^2}{n_i}} =$ (`r anova(battery_model)$"Mean Sq"[[2]]` * $\frac{1}{2}$) $^\frac{1}{2}$ = `r (anova(battery_model)$"Mean Sq"[[2]] * 0.5) ** 0.5`. So $\hat{SE(\hat{\theta_3})} =$ `r (anova(battery_model)$"Mean Sq"[[2]] * 0.5) ** 0.5`.
 
 ## Part H
 
@@ -217,3 +217,120 @@ As we can see our model can be written out as $Y_i =$ `r tensile_strength_model$
 
 Using level of significance $\alpha$ = .05, test the null hypothesis that mean tensile strength is constant across the levels of cotton weight percentage considered in this experiment. Provide all the elements of the test ($H_0$, critical value, observed value of the test statistic, conclusion).
 
+Here we are going to say that our null hypothesis is that $H_0: \mu_1 = \mu_2 = \mu_3 = \mu_4 = \mu_5$. Our alternative hypothesis is that $H_A$: At least one of the $\mu_i$ terms from $i = 1, 2, 3, 4, 5$ does not equal the rest. We can do a F-test to look at this below.
+```{r anova test on cotton}
+anova(tensile_strength_model)
+```
+
+As we can see, we get a F-observed value of `r anova(tensile_strength_model)$"F value"[[1]]` with a numerator degrees of freedom (the `CottonWtPer` df) of `r anova(tensile_strength_model)$"Df"[[1]]` and a denominator degrees of freedom (the `Residuals` df) of `r anova(tensile_strength_model)$"Df"[[2]]`. Using our `qf()` function, we can put in our alpha level of 0.05, our numerator degrees of freedom, and our denominator degrees of freedom to get a F-critical value of `r qf(0.05, anova(tensile_strength_model)$"Df"[[1]], anova(tensile_strength_model)$"Df"[[2]], lower.tail = F)`. Since our F-observed value is `r ifelse(anova(tensile_strength_model)$"F value"[[1]] > qf(0.05, anova(tensile_strength_model)$"Df"[[1]], anova(tensile_strength_model)$"Df"[[2]], lower.tail = F), "greater than", "less than")` our F-critical value we should `r ifelse(anova(tensile_strength_model)$"F value"[[1]] > qf(0.05, anova(tensile_strength_model)$"Df"[[1]], anova(tensile_strength_model)$"Df"[[2]], lower.tail = F), "reject", "fail to reject")` our null hypothesis that $\mu_1 = \mu_2 = \mu_3 = \mu_4 = \mu_5$. Therefore, we `r ifelse(anova(tensile_strength_model)$"F value"[[1]] > qf(0.05, anova(tensile_strength_model)$"Df"[[1]], anova(tensile_strength_model)$"Df"[[2]], lower.tail = F), "have", "do not have")` statistically significant evidence to say that at least one of the $\mu_i$ values from $i = 1, 2, 3, 4, 5$ is different from the others. Moreover this means that the mean tensile strength `r ifelse(anova(tensile_strength_model)$"F value"[[1]] > qf(0.05, anova(tensile_strength_model)$"Df"[[1]], anova(tensile_strength_model)$"Df"[[2]], lower.tail = F), "is not", "can be")` constant for all cotton weight percentages considered.
+
+## Part E
+
+Provide an ANOVA table to accompany the analysis.
+
+From *part d*, we saw a partial ANOVA, which is also shown below:
+```{r anova test shown again on cotton}
+anova(tensile_strength_model)
+```
+
+We will fill in the rest of the table by filling in the `Total` or also known as the `Corrected Total` section of the table. We need the degrees of freedom and Sum of Squares values. For degrees of freedom, we can get that by adding the `CottonWtPer` (which is `r anova(tensile_strength_model)$"Df"[[1]]`) and the `Residuals` (which is `r anova(tensile_strength_model)$"Df"[[2]]`). Therefore the `Corrected Total` degrees of freedom is `r anova(tensile_strength_model)$"Df"[[1]] + anova(tensile_strength_model)$"Df"[[2]]`. To get the sum of square value, we can also add the SS(`CottonWtPer`) with the SS(`Residual`). Note: SS(Total) = SS(Model) + SS(Error). Therefore we can see from our partial ANOVA table the SS(`CottonWtPer`) = `r anova(tensile_strength_model)$"Sum Sq"[[1]]` and the SS(`Residual`) = `r anova(tensile_strength_model)$"Sum Sq"[[2]]`. So adding them together we can get the SS(`Corrected Total`) = `r anova(tensile_strength_model)$"Sum Sq"[[1]] + anova(tensile_strength_model)$"Sum Sq"[[2]]`. Now we can fill in the rest of our table below with these values.
+
+|Source | DF | SS | MS | F-value | p-value
+|----|:-----:|:-----:|:-----:|:------:|-----:|
+|Cotton Weight | `r anova(tensile_strength_model)$Df[[1]]` | `r anova(tensile_strength_model)$"Sum Sq"[[1]]` | `r anova(tensile_strength_model)$"Mean Sq"[[1]]` | `r anova(tensile_strength_model)$"F value"[[1]]` | `r anova(tensile_strength_model)$"Pr(>F)"[[1]]` |
+|Error | `r anova(tensile_strength_model)$Df[[2]]` | `r anova(tensile_strength_model)$"Sum Sq"[[2]]` | `r anova(tensile_strength_model)$"Mean Sq"[[2]]` | | |
+|Corrected Total | `r anova(tensile_strength_model)$Df[[1]] + anova(tensile_strength_model)$Df[[2]]` | `r anova(tensile_strength_model)$"Sum Sq"[[1]] + anova(tensile_strength_model)$"Sum Sq"[[2]]` | | | |
+
+## Part F
+
+What proportion of variability in tensile strength is explained by Cotton Weight Percentage?
+
+We know to find the proportion of variability we need to find the $R^2$ value. To do this, we can use a formula we learned that $R^2 = \frac{SS(R)}{SS(Tot)}$. Note, from *part e*, we found that the SS(Tot) = `r anova(tensile_strength_model)$"Sum Sq"[[1]] + anova(tensile_strength_model)$"Sum Sq"[[2]]` and the SS(R) = `r anova(tensile_strength_model)$"Sum Sq"[[1]]`. Therefore, $R^2 = \frac{SS(R)}{SS(Tot)} =$ `r anova(tensile_strength_model)$"Sum Sq"[[1]]` / `r anova(tensile_strength_model)$"Sum Sq"[[1]] + anova(tensile_strength_model)$"Sum Sq"[[2]]` = `r anova(tensile_strength_model)$"Sum Sq"[[1]] / (anova(tensile_strength_model)$"Sum Sq"[[1]] + anova(tensile_strength_model)$"Sum Sq"[[2]])`. Therefore, we can say that `r 100 *  anova(tensile_strength_model)$"Sum Sq"[[1]] / (anova(tensile_strength_model)$"Sum Sq"[[1]] + anova(tensile_strength_model)$"Sum Sq"[[2]])`% of the variability in tensile strength is explained by Cotton Weight Percentage.
+
+## Part G
+
+Consider a linear contrast among the five treatment means,
+$$\hat{\theta_L} = -2\bar{y_1}-\bar{y_2}+\bar{y_4}+2\bar{y_5}$$
+
+If $\mu_i$ denotes the population mean of units treated with cotton weight percentage $i$ and the vector $\mu$ is defined by $\mu$ = ($\mu_1$, $\mu_2$, $\mu_3$, $\mu_4$, $\mu_5$)' then 
+$$\hat{\theta_L} = (-2, -1, 0, 1, 2) \mu$$
+
+### Part i
+
+Compute $\hat{\theta_L}$.
+
+We know that $\hat{\theta_L} = -2\bar{y_1}-\bar{y_2}+\bar{y_4}+2\bar{y_5}$. From *part a* we know that,
+
+- $\bar{y_1} =$ `r mean_variance_output2$sample_mean[[1]]`
+- $\bar{y_2} =$ `r mean_variance_output2$sample_mean[[2]]`
+- $\bar{y_4} =$ `r mean_variance_output2$sample_mean[[4]]`
+- $\bar{y_5} =$ `r mean_variance_output2$sample_mean[[5]]`
+
+Therefore, $\hat{\theta_L} = -2\bar{y_1}-\bar{y_2}+\bar{y_4}+2\bar{y_5} =$ -2 x `r mean_variance_output2$sample_mean[[1]]` - `r mean_variance_output2$sample_mean[[2]]` + `r mean_variance_output2$sample_mean[[4]]` + 2 x `r mean_variance_output2$sample_mean[[5]]` = `r -2 * mean_variance_output2$sample_mean[[1]] - mean_variance_output2$sample_mean[[2]] + mean_variance_output2$sample_mean[[4]] + 2 * mean_variance_output2$sample_mean[[5]]`. So, $\hat{\theta_L} =$ `r -2 * mean_variance_output2$sample_mean[[1]] - mean_variance_output2$sample_mean[[2]] + mean_variance_output2$sample_mean[[4]] + 2 * mean_variance_output2$sample_mean[[5]]`.
+
+### Part ii
+
+Report the standard error for the estimated contrast in part (i), $\hat{SE(\hat{\theta_L})}$.
+
+We know that $\hat{SE(\hat{\theta_L})} = \sqrt{MS(E) * \sum_{i=1}^{i=t} \frac{c_i^2}{n_i}}$. To find the standard error for $\hat{\theta_L}$, we know from *part e* that the MS(E) is `r anova(tensile_strength_model)$"Mean Sq"[[2]]` and $n_i = 5$ for all $i = 1, 2, ..., t$. Now to find $\sum_{i=1}^{i=t} \frac{c_i^2}{n_i} = \frac{-2^2}{5} + \frac{-1^2}{5} + 0 + \frac{1^2}{5} + \frac{2^2}{5} = \frac{4}{5} + \frac{1}{5} + \frac{1}{5} + \frac{4}{5} = 2$. So, $\hat{SE(\hat{\theta_L})} = \sqrt{MS(E) * \sum_{i=1}^{i=t} \frac{c_i^2}{n_i}} =$ (`r anova(tensile_strength_model)$"Mean Sq"[[2]]` * $2$) $^\frac{1}{2}$ = `r (anova(tensile_strength_model)$"Mean Sq"[[2]] * 2) ** 0.5`. So $\hat{SE(\hat{\theta_L})} =$ `r (anova(tensile_strength_model)$"Mean Sq"[[2]] * 2) ** 0.5`.
+
+### Part iii
+
+Report the sum of squares associated with the contrast i part (i). Of the variability among the five observed treatment means, what proportion is explained by this contrast? Note that sums of squares are used to quantify observed variability.
+
+We know that the $SS(\hat{\theta_L}) = \frac{\hat{\theta_L}^2}{\frac{c_1^2}{n_1} + ... + \frac{c_t^2}{n_t}}$. We also know from before that:
+
+- $c_1 = -2$ From information about *part g*
+- $c_2 = -1$ From information about *part g*
+- $c_3 = 0$ From information about *part g*
+- $c_4 = 1$ From information about *part g*
+- $c_5 = 2$ From information about *part g*
+- $n_i = 5$ for $i = 1, 2, ..., t$ From *part g part ii*
+- $\frac{c_1^2}{n_1} + ... + \frac{c_t^2}{n_t} = 2$
+- $\hat{\theta_L} =$ `r -2 * mean_variance_output2$sample_mean[[1]] - mean_variance_output2$sample_mean[[2]] + mean_variance_output2$sample_mean[[4]] + 2 * mean_variance_output2$sample_mean[[5]]` From *part g part i*
+
+So to plug it all in we know that $SS(\hat{\theta_L}) = \frac{\hat{\theta_L}^2}{\frac{c_1^2}{n_1} + ... + \frac{c_t^2}{n_t}} =$ `r (-2 * mean_variance_output2$sample_mean[[1]] - mean_variance_output2$sample_mean[[2]] + mean_variance_output2$sample_mean[[4]] + 2 * mean_variance_output2$sample_mean[[5]])` $^2$ / 2 = `r (-2 * mean_variance_output2$sample_mean[[1]] - mean_variance_output2$sample_mean[[2]] + mean_variance_output2$sample_mean[[4]] + 2 * mean_variance_output2$sample_mean[[5]]) ** 2 / 2`. So $SS(\hat{\theta_L}) =$ `r (-2 * mean_variance_output2$sample_mean[[1]] - mean_variance_output2$sample_mean[[2]] + mean_variance_output2$sample_mean[[4]] + 2 * mean_variance_output2$sample_mean[[5]]) ** 2 / 2`.
+
+We know to find the proportion of variability we need to find the $R^2$ value. To do this, we can use a formula we learned that Variability among 5 treatment means $= \frac{SS(\hat{\theta_L})}{SS(R)}$. Note, from *part e*, we found that the SS(R) = `r anova(tensile_strength_model)$"Sum Sq"[[1]]` and the SS($\hat{\theta_L}$) = `r (-2 * mean_variance_output2$sample_mean[[1]] - mean_variance_output2$sample_mean[[2]] + mean_variance_output2$sample_mean[[4]] + 2 * mean_variance_output2$sample_mean[[5]]) ** 2 / 2`. Thus this variability explained $= \frac{SS(R)}{SS(R)} =$ `r (-2 * mean_variance_output2$sample_mean[[1]] - mean_variance_output2$sample_mean[[2]] + mean_variance_output2$sample_mean[[4]] + 2 * mean_variance_output2$sample_mean[[5]]) ** 2 / 2` / `r anova(tensile_strength_model)$"Sum Sq"[[1]]` = `r ((-2 * mean_variance_output2$sample_mean[[1]] - mean_variance_output2$sample_mean[[2]] + mean_variance_output2$sample_mean[[4]] + 2 * mean_variance_output2$sample_mean[[5]]) ** 2 / 2) / (anova(tensile_strength_model)$"Sum Sq"[[1]])`. Therefore, we can say that `r 100 *  ((-2 * mean_variance_output2$sample_mean[[1]] - mean_variance_output2$sample_mean[[2]] + mean_variance_output2$sample_mean[[4]] + 2 * mean_variance_output2$sample_mean[[5]]) ** 2 / 2) / (anova(tensile_strength_model)$"Sum Sq"[[1]])`% of the variability among the five observed treatment means is explained by this contrast.
+
+### Part iv
+
+Is too much cotton weight a bad thing? Before conducting any kind of test, do you see, from the table or from a plot of the means, evidence of non-linearity? Explain briefly. Then, using $\alpha = 0.05$, conduct a lack-of-fit for model in which mean tensile strength is a linear function of cotton weight percentage.
+
+First we are going to plot what the data looks like to see if we can see any kind of trend.
+```{r plotting cotton data}
+ggplot(data = tensile_strength, aes(x = CottonWtPer, y = TensileStrength)) +
+  geom_point(aes(color = CottonWtPer), position = "jitter") + 
+  labs(x = "Cotton Weight",
+       y = "Tensile Strength",
+       title = "How Cotton Weight Affects the Tensile Strength",
+       color = "Cotton Weight",
+       caption = "Eric Warren") + 
+  theme_bw()
+```
+
+As we can see, there seems to be an increase in strength until we get to the cotton weight of 30 (where it peaks) and then it seems to fall rapidly in strength. From this alone, there seems to be a point where too much cotton weight is a bad thing, as strength seems to be a quadratic trend. To back up this claim we will need to do a lack of fit test. Our null hypothesis $H_0:$ The Factorial Effects Model can be demonstrated by a Simple Linear Regression Model and our alternative hypothesis $H_A:$ The Factorial Effects Model *cannot* be demonstrated by a Simple Linear Regression Model. First, we should look at the simple linear regression model.
+```{r slr on cotton}
+# Convert back to numeric before modeling
+tensile_strength2 <- tensile_strength
+tensile_strength2$CottonWtPer <- as.numeric(tensile_strength2$CottonWtPer)
+
+# Make SLR model
+tensile_strength_slr_model <- lm(TensileStrength ~ CottonWtPer, tensile_strength2)
+
+# Print the summary of the model
+summary(tensile_strength_slr_model)
+
+# Print the anova table of model
+anova(tensile_strength_slr_model)
+```
+
+As we can see here our SS($R_{poly}$) = `r anova(tensile_strength_slr_model)$"Sum Sq"[[1]]` and our SS($E_{poly}$) = `r anova(tensile_strength_slr_model)$"Sum Sq"[[2]]`. Now this will help us get our F-statistic which can be calculated by $F = \frac{SS(Lack of Fit) / (t-1-p)}{MS(Pure Error)}$. Now it is time to get all the parts and plug it in to get our F-statistic.
+
+- We know $MS(Pure Error) = MS(E_{full})$. From *part e*, we showed that $MS(E_{full}) =$ `r anova(tensile_strength_model)$"Mean Sq"[[2]]`.
+- We know that $t-1-p = t-1-1 = 5-1-1 = 3$. We know from the general description of *Problem 2* that there are 5 treatment groups so $t = 5$. We also know $p = 1$ because our lack of fit test is using a simple linear regression model as a comparison which means the number of predictors in that model is $p = 1$. So $t-1-p = 3$.
+- We know that $SS(Lack of Fit) = SS(Trt) - SS(R_{poly})$. From this part, we showed that SS($R_{poly}$) = `r anova(tensile_strength_slr_model)$"Sum Sq"[[1]]`. To find SS($Trt$), we can look back at *part e* in our ANOVA table to see that this is equal to `r anova(tensile_strength_model)$"Sum Sq"[[1]]`. So $SS(Trt) =$ `r anova(tensile_strength_model)$"Sum Sq"[[1]]`. Therefore, we can now show that $SS(Lack of Fit) = SS(Trt) - SS(R_{poly}) =$ `r anova(tensile_strength_model)$"Sum Sq"[[1]] - anova(tensile_strength_slr_model)$"Sum Sq"[[1]]`. So $SS(Lack of Fit) =$ `r anova(tensile_strength_model)$"Sum Sq"[[1]] - anova(tensile_strength_slr_model)$"Sum Sq"[[1]]`.
+
+Now we can get our F-statistic which is $F = \frac{SS(Lack of Fit) / (t-1-p)}{MS(Pure Error)} =$ (`r anova(tensile_strength_model)$"Sum Sq"[[1]] - anova(tensile_strength_slr_model)$"Sum Sq"[[1]]` / 3) / `r anova(tensile_strength_model)$"Mean Sq"[[2]]` = `r ((anova(tensile_strength_model)$"Sum Sq"[[1]] - anova(tensile_strength_slr_model)$"Sum Sq"[[1]]) / 3) / (anova(tensile_strength_model)$"Mean Sq"[[2]])`. So with our F-statistic of `r ((anova(tensile_strength_model)$"Sum Sq"[[1]] - anova(tensile_strength_slr_model)$"Sum Sq"[[1]]) / 3) / (anova(tensile_strength_model)$"Mean Sq"[[2]])`, we need to compare this with our F-critical value. This can be found by using F($\alpha$, numerator degrees of freedom, denominator degrees of freedom). We were told that $\alpha = 0.05$, the numerator degrees of freedom = 3 (which is just $t-1-p$), and our denominator degrees of freedom = 20 (the same as our Error degrees of freedom from the full one-factor model). So using our `qf()` function in R to get the F-critical value we should get `F(0.05, 3, 20)` = `r qf(0.05, 3, 20, lower.tail = F)`. 
+
+Since our F-observed value is `r ifelse(((anova(tensile_strength_model)$"Sum Sq"[[1]] - anova(tensile_strength_slr_model)$"Sum Sq"[[1]]) / 3) / (anova(tensile_strength_model)$"Mean Sq"[[2]]) > qf(0.05, anova(tensile_strength_model)$"Df"[[1]] - 1, anova(tensile_strength_model)$"Df"[[2]], lower.tail = F), "greater than", "less than")` our F-critical value we should `r ifelse(((anova(tensile_strength_model)$"Sum Sq"[[1]] - anova(tensile_strength_slr_model)$"Sum Sq"[[1]]) / 3) / (anova(tensile_strength_model)$"Mean Sq"[[2]]) > qf(0.05, anova(tensile_strength_model)$"Df"[[1]] - 1, anova(tensile_strength_model)$"Df"[[2]], lower.tail = F), "reject", "fail to reject")` our null hypothesis that the Factorial Effects Model can be demonstrated by a Simple Linear Regression Model. Therefore, we `r ifelse(((anova(tensile_strength_model)$"Sum Sq"[[1]] - anova(tensile_strength_slr_model)$"Sum Sq"[[1]]) / 3) / (anova(tensile_strength_model)$"Mean Sq"[[2]]) > qf(0.05, anova(tensile_strength_model)$"Df"[[1]] - 1, anova(tensile_strength_model)$"Df"[[2]], lower.tail = F), "have", "do not have")` statistically significant evidence to say that the Factorial Effects Model *cannot* be demonstrated by a Simple Linear Regression Model. Moreover this means that we `r ifelse(((anova(tensile_strength_model)$"Sum Sq"[[1]] - anova(tensile_strength_slr_model)$"Sum Sq"[[1]]) / 3) / (anova(tensile_strength_model)$"Mean Sq"[[2]]) > qf(0.05, anova(tensile_strength_model)$"Df"[[1]] - 1, anova(tensile_strength_model)$"Df"[[2]], lower.tail = F), "cannot", "can")` consider a simple linear regression model to predict the tensile strength from the cotton weight (as this relationship is not linear).
