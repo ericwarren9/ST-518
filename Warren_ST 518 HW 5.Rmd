@@ -1,0 +1,394 @@
+---
+title: "ST 518 Homework 5"
+author: "Eric Warren"
+date: "September 29, 2023"
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+options(scipen = 999)
+```
+
+```{r output setup, eval=FALSE, echo=FALSE}
+# This code allows us to render a pdf document
+rmarkdown::render("~/ST-518/Warren_ST 518 HW 5.Rmd", 
+              output_format = "pdf_document", 
+              output_options = list(
+                toc = TRUE, 
+                toc_depth = 3,
+                number_sections = TRUE,
+                df_print = "tibble"
+                )
+              )
+```
+
+# Problem 1
+
+In a completely randomized design, $N = 80$ preschoolers are randomized to four instruction groups to study possible effect on development. The means and variances of improvements in a spatio-temporal reasoning score are given in the table below.
+
+|$i$ | Group | $n_i$ | $\bar{y_{i.}}$ | $s_i^2$ |
+|----|:-----:|:-----:|:-----:|-----:|
+|1 | Instructor | 20 | 7.3 | 14.2 |
+|2 | Computer | 20 | 4.5 | 9.3 |
+|3 | Control | 20 | 0.3 | 11.0 |
+|4 | Piano | 20 | 3.7 | 7.5 |
+
+## Part A
+
+Use Tukey’s procedure to carry out all pairwise comparisons while controlling the familywise error rate at level $\alpha$ = 0.05. Which of the observed differences may be declared significant. Convey this info by producing a recorded table of means that uses letters to enable the reader to know which differences are significant.
+
+First we need to remember how a Tukey test works. The formula we should use is we reject the $H_0$ if $|\hat{\theta}| > q(\alpha, t, N-t) \sqrt{\frac{MS(E)}{n}}$ where $\hat{\theta} = \bar{y_i} - \bar{y_j}$ and $MS(E) = \frac{1}{N-t}\sum_{i=1}^{t} (n_i - 1) s_i^2$. Below we are going to get the MSE and do some tests.
+```{r problem 1 a}
+# Put in the means
+mean_1 <- 7.3; mean_2 <- 4.5; mean_3 <- 0.3; mean_4 <- 3.7
+
+# Put in all the si2 values
+s2_1 <- 14.2; s2_2 <- 9.3; s2_3 <- 11.0; s2_4 <- 7.5
+
+# Put in the N, t, and ni values
+N = 80; n1 <- 20; n2 <- 20; n3 <- 20; n4 <- 20; t <- 4
+
+# Get the MSE; show output for case of problem
+mse_problem_1 <- (1 / (N-1)) * ((n1-1) * s2_1 + (n2-1) * s2_2 + (n3-1) * s2_3 + (n4-1) * s2_4)
+mse_problem_1
+
+# Get the Tukey 95% HSD (use qtukey(1-alpha, t, N-t) * sqrt(mse / n)) where n = any ni value; show output for case of problem
+tukey_critical_value <- qtukey(.95, t, N-t) * sqrt(mse_problem_1 / n1)
+tukey_critical_value
+
+# Compare means from groups 1 and 2; show for case in problem
+tukey_test_1_against_2 <- abs(mean_1 - mean_2)
+tukey_test_1_against_2
+tukey_test_1_against_2 > tukey_critical_value # Do we reject?
+
+# Compare means from groups 1 and 3; show for case in problem
+tukey_test_1_against_3 <- abs(mean_1 - mean_3)
+tukey_test_1_against_3
+tukey_test_1_against_3 > tukey_critical_value # Do we reject?
+
+# Compare means from groups 1 and 4; show for case in problem
+tukey_test_1_against_4 <- abs(mean_1 - mean_4)
+tukey_test_1_against_4
+tukey_test_1_against_4 > tukey_critical_value # Do we reject?
+
+# Compare means from groups 2 and 3; show for case in problem
+tukey_test_2_against_3 <- abs(mean_2 - mean_3)
+tukey_test_2_against_3
+tukey_test_2_against_3 > tukey_critical_value # Do we reject?
+
+# Compare means from groups 2 and 4; show for case in problem
+tukey_test_2_against_4 <- abs(mean_2 - mean_4)
+tukey_test_2_against_4
+tukey_test_2_against_4 > tukey_critical_value # Do we reject?
+
+# Compare means from groups 3 and 4; show for case in problem
+tukey_test_3_against_4 <- abs(mean_3 - mean_4)
+tukey_test_3_against_4
+tukey_test_3_against_4 > tukey_critical_value # Do we reject?
+```
+
+As we can see by doing our Tukey test, the only test that results in `FALSE` for "Do we reject?" is the comparison between the second group (computer) and the fourth group (piano). We are going to show a table below to make this easier to follow.
+
+|Statistic | Output |
+|:-----|------:|
+|Alpha | 0.05 |
+|Error Degrees of Freedom | `r N-t` |
+|Error Mean Square | `r mse_problem_1` |
+|Critical Value of Test (HSD) | `r tukey_critical_value` |
+
+In this table, we will show the means and means with the same letter are **NOT** significantly different when doing the pairwise Tukey Test.
+
+|Tukey Grouping | Group | n | Mean |
+|:-----|:-----:|:-------:|------:|
+| | Instructor | 20 | 7.3 |
+|A | Computer | 20 | 4.5 |
+| | Control | 20 | 0.3 |
+|A | Piano | 20 | 3.7 |
+
+## Part B
+
+Use Scheffe’s procedure to obtain simultaneous 95% confidence intervals for all the pairwise differences considered in *part (a)* in addition to the contrast of the control with the average of the three non-control treatment groups.
+
+First we are going to find the pairwise comparisons using Scheffe's procedure. To find the intervals we use the confidence interval formula:
+$$\bar{y_{i.}} - \bar{y_{j.}} \pm \sqrt{(t-1)F(1-\alpha, t-1, N-t) * MS(E) * \sum_{i=1}^{t} \frac{c_i^2}{n_i}}$$
+Please note, that the margin of error in the confidence interval for all pairwise comparisons are the same since there are just two values (and contrasts have a value of 1 and -1 while all the $n_i$ values are the same). We know that $\sum_{i=1}^{t} \frac{c_i^2}{n_i} = \frac{1}{20} + \frac{1}{20} = \frac{2}{20} = \frac{1}{10}$. We are going to obtain the margin of error first.
+```{r problem 1 scheffe moe}
+alpha <- 0.05 # 95% confidence interval
+
+scheffe_moe <- sqrt((t-1) * qf(1-alpha, t-1, N-t) * mse_problem_1 * .1)
+scheffe_moe # Show for purpose of the problem
+```
+
+Now we are going to get our grouping confidence intervals and make a table below to make it easy to follow.
+```{r scheffe CI}
+# Compare group 1 and 2
+lower_CI_groups_1_vs_2 <- (mean_1 - mean_2) - scheffe_moe
+upper_CI_groups_1_vs_2 <- (mean_1 - mean_2) + scheffe_moe
+
+# Compare group 1 and 3
+lower_CI_groups_1_vs_3 <- (mean_1 - mean_3) - scheffe_moe
+upper_CI_groups_1_vs_3 <- (mean_1 - mean_3) + scheffe_moe
+
+# Compare group 1 and 4
+lower_CI_groups_1_vs_4 <- (mean_1 - mean_4) - scheffe_moe
+upper_CI_groups_1_vs_4 <- (mean_1 - mean_4) + scheffe_moe
+
+# Compare group 2 and 3
+lower_CI_groups_2_vs_3 <- (mean_2 - mean_3) - scheffe_moe
+upper_CI_groups_2_vs_3 <- (mean_2 - mean_3) + scheffe_moe
+
+# Compare group 2 and 4
+lower_CI_groups_2_vs_4 <- (mean_2 - mean_4) - scheffe_moe
+upper_CI_groups_2_vs_4 <- (mean_2 - mean_4) + scheffe_moe
+
+# Compare group 3 and 4
+lower_CI_groups_3_vs_4 <- (mean_3 - mean_4) - scheffe_moe
+upper_CI_groups_3_vs_4 <- (mean_3 - mean_4) + scheffe_moe
+```
+
+Here we will show a table of the groups with their corresponding Scheffe Confidence Interval. For note of the table, we are subtracting the first mean value minus the second mean value. So a negative value means the second group in the comparison has a larger average value and a positive value means the first group's average value is larger.
+
+|Comparison of Groups | Lower Confidence Interval | Upper Confidence Interval |
+|:-----|:-----:|------:|
+|Instructor and Computer | `r lower_CI_groups_1_vs_2` | `r upper_CI_groups_1_vs_2` |
+|Instructor and Control | `r lower_CI_groups_1_vs_3` | `r upper_CI_groups_1_vs_3` |
+|Instructor and Piano | `r lower_CI_groups_1_vs_4` | `r upper_CI_groups_1_vs_4` |
+|Computer and Control | `r lower_CI_groups_2_vs_3` | `r upper_CI_groups_2_vs_3` |
+|Computer and Piano | `r lower_CI_groups_2_vs_4` | `r upper_CI_groups_2_vs_4` |
+|Control and Piano | `r lower_CI_groups_3_vs_4` | `r upper_CI_groups_3_vs_4` |
+
+Now we are going to show the contrast of the control with the average of the three non-control treatment groups. The formula we will use is 
+$$\frac{\bar{y_{1.}} + \bar{y_{2.}} + \bar{y_{4.}}}{3} - \bar{y_{3.}} \pm \sqrt{(t-1)F(1-\alpha, t-1, N-t) * MS(E) * \sum_{i=1}^{t} \frac{c_i^2}{n_i}}$$
+where $t=4$ and $\sum_{i=1}^{t} \frac{c_i^2}{n_i} = \frac{-1^2}{20} + \frac{3 * \frac{1}{3}^2}{20} = \frac{1}{20} + \frac{{1}{3}}{20} = \frac{1}{20} + \frac{1}{60} = \frac{4}{60} = \frac{1}{15}$. Now we are going to get the confidence interval for all the groups compared to the control.
+```{r scheffe compare all to control}
+# Get margin of error
+scheffe_moe_all <- sqrt((t-1) * qf(1-alpha, t-1, N-t) * mse_problem_1 * (1/15))
+scheffe_moe_all # Show for purpose of the problem
+
+# Get bounds for confidence interval
+lower_CI_control_vs_all <- (((mean_1 + mean_2 + mean_4) / 3) - mean_3) - scheffe_moe_all
+upper_CI_control_vs_all <- (((mean_1 + mean_2 + mean_4) / 3) - mean_3) + scheffe_moe_all
+
+# Show bounds for case of problem
+lower_CI_control_vs_all; upper_CI_control_vs_all
+```
+
+As we can see the lower bound for our 95% confidence interval is `r lower_CI_control_vs_all` and our upper bound is `r upper_CI_control_vs_all` which is saying that we are 95% confident that the average mean reasoning score when using a program is between `r lower_CI_control_vs_all` and `r upper_CI_control_vs_all` points higher than doing nothing (which is the control group).
+
+## Part C
+
+Would Bonferroni (with $k = 7$) have been more efficient than Scheffe here? To answer this question, compare the widths, or relevant component multipliers of the intervals.
+
+Since we are trying to see what is more efficient we need to compare the margin of error on the intervals. Let us look at the margin of errors for both Scheffe and Bonferroni. For Scheffe the $MOE_{scheffe} = \sqrt{(t-1)F(1-\alpha, t-1, N-t) * MS(E) * \sum_{i=1}^{t} \frac{c_i^2}{n_i}}$ and for Bonferroni the $MOE_{bonferroni} = t(\frac{\alpha / k}{2}, \nu) * \sqrt{MSE * \sum_{i=1}^{t} \frac{c_i^2}{n_i}}$. As we can see both margin of errors have $\sqrt{MSE * \sum_{i=1}^{t} \frac{c_i^2}{n_i}}$ so we are really comparing which is bigger between $\sqrt{(t-1)F(1-\alpha, t-1, N-t)}$ for Scheffe or $t(\frac{\alpha / k}{2}, \nu)$ for bonferroni. Let us examine this below. Note, $\alpha = 0.05$ since we are looking at 95% confidence intervals.
+```{r compare scheffe to bonferroni}
+# Get Scheffe width
+scheffe_width <- sqrt((t-1) * qf(1-alpha, t-1, N-t))
+
+# Get Bonferroni width; k = 7
+k <- 7
+bonferroni_width <- qt(1 - ((alpha / k) / 2), N-t)
+
+# Compare both widths
+scheffe_width; bonferroni_width
+```
+
+As we can see, the Bonferroni procedure would have been better than Scheffe because the multipliers of the Bonferroni procedure is less; moreover, the width of the Bonferroni procedure is less. Therefore, Bonferroni would have been more efficient than Scheffe here. Please note, when the degrees of freedom is than two, Bonferroni will have a smaller width than Scheffe, just like we have shown here.
+
+# Problem 2
+
+Cheese is produced by bacterial fermentation of milk. Consider designing an
+experiment to test for the possible effect of adding two strains (A and B) of nonstarter bacteria on total free amino acids ($y$) in cheese. There will be $t = 4$ conditions: neither strain added, A added, B added, both added. Suppose the mean total free amino acids under the first condition is believed to be $\mu_1 = 4.4$. The smallest effect the experiment needs to be able to find is $H_1 : \mu_1 = 4, \mu_A = 4.4, \mu_B = 4.4, \mu_{AB} = 4.8$. (The effects under this hypothesis are said to be “additive.”) 
+
+Suppose that, for the first condition, we might expect to produce cheese that could have amino acid content as high as 4.3 or as low as 3.7. Use the range to roughly approximate the error variance. 
+
+For the part above we know that $\sigma = \frac{Range}{4}$. We know the $Range = 4.3 - 3.7$ so $\sigma = \frac{Range}{4} = \frac{4.3-3.7}{4} = \frac{0.6}{4} = 0.15$. So $\sigma = 0.15$ which means our error variance is $\sigma^2 = 0.15^2 = 0.0225$.
+
+$r = 5$ cheeses for will be produced under each condition (after suitable randomization of the $t = 4$ treatments to conditions) for a total of $N = rt = 20$ cheeses. Total free amino acid content will be measured and the F-test will be used to test the null hypothesis $H_0 : \mu_1 = \mu_A = \mu_B = \mu_{AB}$
+
+## Part A
+
+Give the critical value of the F-distribution and the decision rule for the F-ratio for a test of $H_0$ at level $\alpha = 0.05$.
+
+We can find this below by using our `qf(1 - alpha, t-1, N-t)` where we are told that $t = 4$ and $N = rt = 20$. $\alpha = 0.05$.
+```{r get critical value of F problem 2}
+# Put in needed terms
+alpha <- 0.05; r <- 5; t <- 4; N <- r*t
+
+# Get critical value
+problem_2_critical_value <- qf(1 - alpha, t-1, N-t)
+```
+
+Our critical value when $\alpha = 0.05$ for a test on $H_0$ is `r problem_2_critical_value`. The decision rule for this F-ratio test is that if the corresponding F-statistic value we get when performing our test is less than or equal to `r problem_2_critical_value` we fail to reject $H_0$ but if our F-statistic value is greater than `r problem_2_critical_value` we reject $H_0$ and proceed with accepting the $H_A$.
+
+## Part B
+
+Report the power to reject $H_0$ when $H_1$ is true.
+
+We are going to report the power or P(Reject $H_0$ | $H_A$ is true). In this case it is P(Reject $H_0$ | $H_1$ is true). We can show this in our code below. Remember $\sigma^2 = 0.15^2 = 0.0225$ and $H_1 : \mu_1 = 4, \mu_A = 4.4, \mu_B = 4.4, \mu_{AB} = 4.8$.
+```{r report power 2-b}
+alpha <- 0.05 # Get alpha
+sigma2 <- 0.0225 # Get sigma^2
+
+# Get the power through this chain
+my_ncp <- r * (t-1) * var(c(4, 4.4, 4.4, 4.8)) / sigma2
+power <- 1 - pf(qf(1-alpha, t-1, N-t), t-1, N-t, my_ncp); power # Show the power for case of problem
+```
+
+As we can see the power to reject $H_0$ when $H_1$ is true is `r power`.
+
+## Part C
+
+How would the power change if we used an $\alpha = 0.01$ critical value?
+
+We know that as $\alpha$ decreases, so does the power but we will show that in our example here.
+```{r report power 2-c}
+alpha2 <- 0.01
+power2 <- 1 - pf(qf(1-alpha2, t-1, N-t), t-1, N-t, my_ncp); power2 # Show the power for case of problem
+```
+
+As we can see when $\alpha = 0.01$, the power is now `r power2` as opposed to when the power was `r power` when $\alpha = 0.05$. Therefore we can see that the power `r ifelse(power2 < power, "decreases", "increases")` when $\alpha$ decreases.
+
+## Part D
+
+How would the power change if we used $\alpha = 0.05$ but $\sigma$ was really larger than our approximation?
+
+We know from our lecture that when the $sigma^2$ increases, the power decreases. Thus if $\sigma$ was really larger than our approximation then $\sigma^2$ would be larger than our approximation and our power would decrease. This is because we are increasing our denominator which means the overall value (of power) should be decreasing. We will show that in our example here where we will say our $\sigma$ value is really 0.5 so $\sigma^2 = 0.25$ now.
+```{r report power 2-d}
+alpha <- 0.05
+sigma2_d <- 0.25 # Get sigma^2
+
+# Get the power through this chain
+my_ncp2 <- r * (t-1) * var(c(4, 4.4, 4.4, 4.8)) / sigma2_d
+power3 <- 1 - pf(qf(1-alpha, t-1, N-t), t-1, N-t, my_ncp2); power3 # Show the power for case of problem
+```
+
+As we can see when $\sigma = 0.5$ (which means $\sigma$ is increasing), the power is now `r power3` as opposed to when the power was `r power` when $\sigma = 0.15$ (which was when $\sigma$ was lower. Therefore we can see that the power `r ifelse(power3 < power, "decreases", "increases")` when $\sigma$ increases.
+
+## Part E
+
+How would the type II error rate, $\beta$ change if we produced $r + 1$ cheeses per treatment rather than $r$?
+
+Note in our past calculations, $r = \frac{N}{t}$ so $r + 1 = \frac{N}{t} + 1$. When we will do the example we will change $\frac{N}{t} = 5$ to $\frac{N}{t} + 1 = r + 1 = 6$. Now we know from the lecture that by the number in each treatment (in this $r$ increasing to $r + 1$) the power increases. Since $\beta = 1 - power$, we know that if power increases, $\beta$ must decrease. Our example will show this.
+```{r report power 2-e}
+alpha <- 0.05 # Get alpha
+sigma2 <- 0.0225 # Get sigma^2
+new_r <- 6 
+new_N <- new_r * t
+
+# Get the power through this chain
+my_ncp3 <- new_r * (t-1) * var(c(4, 4.4, 4.4, 4.8)) / sigma2
+power4 <- 1 - pf(qf(1-alpha, t-1, new_N-t), t-1, new_N-t, my_ncp3); power4 # Show the power for case of problem
+```
+
+As we can see in this example, the power is `r ifelse(power4 > power, "increasing", "decreasing")` (in this example we can see the power is `r power4` as before which was `r power`). This means that the $\beta$ is `r ifelse(power4 < power, "increasing", "decreasing")` since it has an opposite relationship of power (if power goes up $\beta$ goes down and vice versa). Therefore, we have shown from this example and what we know from before that if we produced $r + 1$ cheeses per treatment rather than $r$, $\beta$ (or Type II Error) will decrease.
+
+## Part F
+
+Find the smallest $r$ so that the power exceeds 0.9.
+
+Here we are going to look at different values of $r$ that will allow us to see what is the smallest value that will allow us to still get a power exceeding 0.9.
+```{r problem 2-f find r}
+# Set up loop
+library(tidyverse)
+results <- list()
+results <- vector("list", length = 4)
+
+# Make for loop to go through r = 2, 3, 4, 5 (we can stop at 5 since we know the power > 0.9 at r = 5)
+for (i in 2:5){
+  alpha <- 0.05; r <- i; t <- 4; N <- r*t; sigma2 <- 0.0225
+  my_ncp_value <- r * (t-1) * var(c(4, 4.4, 4.4, 4.8)) / sigma2
+  power_value <- 1 - pf(qf(1-alpha, t-1, N-t), t-1, N-t, my_ncp_value)
+  results_data <- data.frame(r, ncp = my_ncp_value, power = power_value)
+  results[[i]] <- results_data
+}
+
+# Show the results
+final_results <- as_tibble(do.call(rbind, results)); final_results # show output
+```
+
+As we can see in our table, the $r = 3$ is when our power first gets above 0.9 so the smallest $r$ we need is when $r = 3$.
+
+# Problem 3
+
+Recall the battery experiment from Homework #4. The four battery types are actually combinations of two factors, Duty and Brand:
+
+|Battery Type | Duty | Brand |
+|:-----|:-----:|-------:|
+|1 | Alkaline | Name |
+|2 | Alkaline | Store |
+|3 | Heavy | Name |
+|4 | Heavy | Store |
+
+First we are going to read in the `battery` data and will show what it looks like. 
+```{r read in battery}
+library(tidyverse)
+battery <- read_table("battery.txt")
+battery$TypeBat <- factor(battery$TypeBat)
+battery
+```
+
+Now we are going to show the `mean` of each battery type.
+```{r mean of battery types}
+mean_output <- battery %>%
+  group_by(TypeBat) %>%
+  summarize(mean = mean(LPUC))
+mean_output # show table
+```
+
+Therefore we can turn this table below:
+
+|Battery Type | Duty | Brand |
+|:-----|:-----:|-------:|
+|1 | Alkaline | Name |
+|2 | Alkaline | Store |
+|3 | Heavy | Name |
+|4 | Heavy | Store |
+
+into a 2x2 table with the means
+
+| | Duty = `Alkaline` | Duty = `Heavy` | Marginal Mean |
+|:------|:------:|:------:|-------:|
+|Brand = `Name` | `r mean_output$mean[[1]]` | `r mean_output$mean[[3]]` | `r (mean_output$mean[[1]] + mean_output$mean[[3]]) / 2` |
+|Brand = `Store` | `r mean_output$mean[[2]]` | `r mean_output$mean[[4]]` | `r (mean_output$mean[[2]] + mean_output$mean[[4]]) / 2` |
+|Marginal Mean | `r (mean_output$mean[[1]] + mean_output$mean[[2]]) / 2` | `r (mean_output$mean[[3]] + mean_output$mean[[4]]) / 2` | |
+
+## Part A
+
+Estimate each contrast listed below:
+
+### Part i
+
+The simple effect of Duty for Name Brand batteries.
+
+To find this we need to look at the mean difference of battery type with the fixed variable being name batteries. Thus, we are going to look at the difference of means between battery type 1 and 3. Thus, $\theta_1 = (1, 0, -1, 0)' \begin{pmatrix} \mu_1 \\ \mu_2 \\ \mu_3 \\ \mu_4 \end{pmatrix} = \mu_1 - \mu_3$ so to find the estimate we are going to say that $\hat{\theta_1} = \hat{\mu_1} - \hat{\mu_3} = \bar{y_1} - \bar{y_3}$. We know $\bar{y_1} =$ `r mean_output$mean[[1]]` and $\bar{y_3} =$ `r mean_output$mean[[3]]`. $\hat{\theta_1} = \bar{y_1} - \bar{y_3} =$ `r mean_output$mean[[1]] - mean_output$mean[[3]]`. Thus, the simple effect of Duty for Name Brand batteries is `r mean_output$mean[[1]] - mean_output$mean[[3]]`.
+
+### Part ii
+
+The simple effect of Duty for Store Brand batteries.
+
+To find this we need to look at the mean difference of battery type with the fixed variable being store batteries. Thus, we are going to look at the difference of means between battery type 2 and 4. Thus, $\theta_2 = (0, 1, 0, -1)' \begin{pmatrix} \mu_1 \\ \mu_2 \\ \mu_3 \\ \mu_4 \end{pmatrix} = \mu_2 - \mu_4$ so to find the estimate we are going to say that $\hat{\theta_2} = \hat{\mu_2} - \hat{\mu_4} = \bar{y_2} - \bar{y_4}$. We know $\bar{y_2} =$ `r mean_output$mean[[2]]` and $\bar{y_4} =$ `r mean_output$mean[[4]]`. $\hat{\theta_2} = \bar{y_2} - \bar{y_4} =$ `r mean_output$mean[[2]] - mean_output$mean[[4]]`. Thus, the simple effect of Duty for Store Brand batteries is `r mean_output$mean[[2]] - mean_output$mean[[4]]`.
+
+### Part iii
+
+The main effect of Duty.
+
+To find this we need to look at the mean difference of batteries with the different duties with no fixed variable. Thus, we are going to look at the difference of means between battery types 1 and 2 and then compare to types 3 and 4. Thus, $\theta_3 = (1, 1, -1, -1)' \begin{pmatrix} \mu_1 \\ \mu_2 \\ \mu_3 \\ \mu_4 \end{pmatrix} = \mu_1 + \mu_2 - \mu_3 - \mu_4$ so to find the estimate we are going to say that $\hat{\theta_3} = \hat{\mu_1} + \hat{\mu_2} - \hat{\mu_3} - \hat{\mu_4} = \bar{y_1} + \bar{y_2} - \bar{y_3} - \bar{y_4}$. We know $\bar{y_1} =$ `r mean_output$mean[[1]]`, $\bar{y_2} =$ `r mean_output$mean[[2]]`, $\bar{y_3} =$ `r mean_output$mean[[3]]`, and $\bar{y_4} =$ `r mean_output$mean[[4]]`. $\hat{\theta_3} = \bar{y_1} + \bar{y_2} - \bar{y_3} - \bar{y_4} =$ `r mean_output$mean[[1]] + mean_output$mean[[2]] - mean_output$mean[[3]] - mean_output$mean[[4]]`. Thus, the main effect of Duty batteries is `r mean_output$mean[[1]] + mean_output$mean[[2]] - mean_output$mean[[3]] - mean_output$mean[[4]]`.
+
+### Part iv
+
+The interaction effect.
+
+To find this we need to look at the mean difference of batteries for the interaction effect (which means we want to look at the opposite battery characteristics to compare this). Thus, we are going to look at the difference of means between battery types 1 and 4 and then compare to types 2 and 3 (since we want to compare with the opposites to find the interaction). Thus, $\theta_4 = (1, -1, -1, 1)' \begin{pmatrix} \mu_1 \\ \mu_2 \\ \mu_3 \\ \mu_4 \end{pmatrix} = \mu_1 - \mu_2 - \mu_3 + \mu_4$ so to find the estimate we are going to say that $\hat{\theta_4} = \hat{\mu_1} - \hat{\mu_2} - \hat{\mu_3} + \hat{\mu_4} = \bar{y_1} - \bar{y_2} - \bar{y_3} + \bar{y_4}$. We know $\bar{y_1} =$ `r mean_output$mean[[1]]`, $\bar{y_2} =$ `r mean_output$mean[[2]]`, $\bar{y_3} =$ `r mean_output$mean[[3]]`, and $\bar{y_4} =$ `r mean_output$mean[[4]]`. $\hat{\theta_4} = \bar{y_1} - \bar{y_2} - \bar{y_3} + \bar{y_4} =$ `r mean_output$mean[[1]] - mean_output$mean[[2]] - mean_output$mean[[3]] + mean_output$mean[[4]]`. Thus, the interaction effect of batteries is `r mean_output$mean[[1]] - mean_output$mean[[2]] - mean_output$mean[[3]] + mean_output$mean[[4]]`.
+
+### Part v
+
+The main effect of Brand.
+
+To find this we need to look at the mean difference of batteries with the different brands with no fixed variable. Thus, we are going to look at the difference of means between battery types 1 and 3 and then compare to types 2 and 4. Thus, $\theta_5 = (1, -1, 1, -1)' \begin{pmatrix} \mu_1 \\ \mu_2 \\ \mu_3 \\ \mu_4 \end{pmatrix} = \mu_1 - \mu_2 + \mu_3 - \mu_4$ so to find the estimate we are going to say that $\hat{\theta_5} = \hat{\mu_1} - \hat{\mu_2} + \hat{\mu_3} - \hat{\mu_4} = \bar{y_1} - \bar{y_2} + \bar{y_3} - \bar{y_4}$. We know $\bar{y_1} =$ `r mean_output$mean[[1]]`, $\bar{y_2} =$ `r mean_output$mean[[2]]`, $\bar{y_3} =$ `r mean_output$mean[[3]]`, and $\bar{y_4} =$ `r mean_output$mean[[4]]`. $\hat{\theta_5} = \bar{y_1} - \bar{y_2} + \bar{y_3} - \bar{y_4} =$ `r mean_output$mean[[1]] - mean_output$mean[[2]] + mean_output$mean[[3]] - mean_output$mean[[4]]`. Thus, the main effect of brand batteries is `r mean_output$mean[[1]] - mean_output$mean[[2]] + mean_output$mean[[3]] - mean_output$mean[[4]]`.
+
+## Part B
+
+If you were to compute the contrast sum of squares for the last three listed contrasts, what would they add up to?
+
+We know that by adding the sum of squares of the main effects and the interaction effect it will equal the sum of squares for treatment. That is we know that $SS(\hat{\theta_3}) + SS(\hat{\theta_4}) + SS(\hat{\theta_5}) = SS(Trt)$. From homework 4, we know that this value is `r anova(lm(LPUC ~ as.factor(TypeBat), battery))$"Sum Sq"[[1]]`, so adding up the last three listed contrasts' sum of squares ($SS(\hat{\theta_3}) + SS(\hat{\theta_4}) + SS(\hat{\theta_5})$) would equal the $SS(Trt)$ of `r anova(lm(LPUC ~ as.factor(TypeBat), battery))$"Sum Sq"[[1]]`.
