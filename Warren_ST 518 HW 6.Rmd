@@ -1,0 +1,87 @@
+---
+title: "ST 518 Homework 6"
+author: "Eric Warren"
+date: "October 22, 2023"
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+options(scipen = 999)
+```
+
+```{r output setup, eval=FALSE, echo=FALSE}
+# This code allows us to render a pdf document
+rmarkdown::render("~/ST-518/Warren_ST 518 HW 6.Rmd", 
+              output_format = "pdf_document", 
+              output_options = list(
+                toc = TRUE, 
+                toc_depth = 3,
+                number_sections = TRUE,
+                df_print = "tibble"
+                )
+              )
+```
+
+# Problem 1
+
+A completely randomized experiment investigates the effects of increasing nitrogen (N) and copper (Cu) in the diet of chickens. Feed conversion ratio (FCR) is observed on $n = 4$ chickens for each of four treatment combinations(diets), with output below. Data are available online as “fcr.dat” so you can check your answers, but you should be able to complete these problems without software.
+
+## Part A
+
+Write a factorial effects model for the 16 observed FCR measurements which assumes that, for a given diet, FCR is normally distributed, with variance $\sigma^2$ that is constant across diets.
+
+We can say that this factorial effects model is $Y_{ijk} = \mu + \alpha_i + \beta_j + (\alpha \beta)_{ij} + E_{ijk}$ where for $i = 1, 2, 3, 4$ and $j = 1, 2, 3, 4$ and $E_{ijk}$ are i.i.d $N(0, \sigma^2)$ errors. 
+
+## Part B
+
+Estimate the simple effect of increasing copper when $N = 25$.
+
+We can estimate the simple effect by only looking at the output for when $N = 25$. This occurs when $Cu = 10$ and gives us a mean value of 133 and when $Cu = 100$ and gives us a mean value of 146. Therefore, the simple effect of increasing copper when $n = 25$ is 146 - 133 = 13. For future purposes we will call this answer $\hat{\theta_1} = \bar{y_3} - \bar{y_1} = 13$ where $\bar{y_3} = 146$ and $\bar{y_1} = 133$.
+
+## Part C
+
+Estimate the simple effect of increasing copper when $N = 45$.
+
+We can estimate the simple effect by only looking at the output for when $N = 45$. This occurs when $Cu = 10$ and gives us a mean value of 130 and when $Cu = 100$ and gives us a mean value of 127. Therefore, the simple effect of increasing copper when $n = 45$ is subtracting these two values of 127 - 130 = -3. For future purposes we will call this answer $\hat{\theta_2} = \bar{y_4} - \bar{y_2} = -3$ where $\bar{y_4} = 127$ and $\bar{y_2} = 130$.
+
+## Part D
+
+Estimate the difference in the simple effects of increasing copper across levels of Nitrogen.
+
+This is just finding the difference between **Part B** and **Part C**. For purposes of this problem, we will call this estimate $\hat{theta_3} = \hat{\theta_1} - \hat{\theta_2} = \bar{y_3} - \bar{y_1} - (\bar{y_4} - \bar{y_2}) = \bar{y_3} - \bar{y_1} - \bar{y_4} + \bar{y_2} = - 13 - (-3) = 16$. Therefore, this difference shown by $\hat{\theta_3} = 16$.
+
+## Part E
+
+Using significance level $\alpha = .05$, test the hypothesis that the simple effects of copper are constant across levels of nitrogen.
+
+Here we are going to do a F-test to see if this simple effects of copper are consistent across the different levels of nitrogen. Our null hypothesis is that the effects of copper are consistent across all levels of nitrogen. The alternative hypothesis is that they are not. We are going to use our result from **Part D** to help us get our appropriate F-value. In this case, we have shown that $\hat{\theta_3} = 16$. Now let us note the contrast which is $(-1, 1, 1, -1)'$ which will get us our $c_i$ values later. To get our F-value, we must use the formula $F = \frac{SS(\hat{\theta_3}) / (a-1) (b-1)}{MS(E)}$ where $a = 2$ because there are only 2 nitrogen levels, $b = 2$ because there are only 2 copper levels, $SS(\hat{\theta_3}) = \frac{(\hat{\theta_3})^2}{\sum_{i=1}^{4} \frac{c_i^2}{n_i}} = \frac{16^2}{\frac{-1^2}{4} + \frac{1^2}{4} + \frac{1^2}{4} + \frac{-1^2}{4}} = \frac{256}{4 * \frac{1}{4}} = \frac{256}{1} = 256$, $MS(E) = \frac{1}{4} * \sum_{i=1}^{4} s_i^2 = 36 + 16 + 58.6666667 + 57.3333333 = \frac{1}{4} * 168 = 42$. Now that we have found all the values for our F-test we can get our F-value to be $F = \frac{SS(\hat{\theta_3}) / (a-1) (b-1)}{MS(E)} = \frac{256 / (2-1) (2-1)}{42} = \frac{256}{42} = 6.095238$ on degrees of freedom $df = (a-1) * (b-1), n(ab-1) = (2-1)(2-1), 4(2*2-1) = 1*1, 4*3 = 1, 12$. We can get our F-critical value (or $F^*$) by using the `qf()` function in R. Our $F^*$ value is `qf(1-alpha, df1, df2)` = `qf(1-.05, 1, 12)` = `r qf(1-.05, 1, 12)`. Since the F-value we obtained is greater the F-critical value (6.095238 > `r qf(1-.05, 1, 12)`) then we reject our null hypothesis and say that the simple effects of copper are **not** consistent across the different levels of nitrogen. 
+
+## Part F
+
+Report the smallest level of significance at which the difference between simple copper effects across levels of nitrogen may be declared significant.
+
+I am assuming for this problem that we are essentially finding the p-value we obtain from our F-value and use that as the smallest significance level we can use for the difference between copper effects still be declared significant. Remember for hypothesis testing, we declare significance when the p-value we obtain is less than our significance level ($\alpha$). Note in **Part E** we showed that the F-value we obtained was 6.095238. Now we can use the `pf()` function to get the smallest level of significance at which we can still declare significance. To do this, we will put into the function `pf(F-value, df1, df2, lower.tail = F)` = `pf(6.095238, 1, 12, lower.tail = F)` = `r pf(6.095238, 1, 12, lower.tail = F)`. Therefore, the smallest level of significance at which the difference between simple copper effects across levels of nitrogen may be declared significant is `r pf(6.095238, 1, 12, lower.tail = F)`. 
+
+## Part G
+
+Report a contrast sum of squares associated with the contrast tested in part (d).
+
+Remember in **Part E**, we said this contrast was $(-1, 1, 1, -1)'$. We can use this for the $c_i$ values in our sum of squares calculation. We are going to call this sum of squares calculation $SS(\hat{\theta_3})$. Therefore, $SS(\hat{\theta_3}) = \frac{(\hat{\theta_3})^2}{\sum_{i=1}^{4} \frac{c_i^2}{n_i}} = \frac{16^2}{\frac{-1^2}{4} + \frac{1^2}{4} + \frac{1^2}{4} + \frac{-1^2}{4}} = \frac{256}{4 * \frac{1}{4}} = \frac{256}{1} = 256$. This was also calculated in **Part E** for our F-test, but this is now reinforcing what we did to get this value.
+
+## Part H
+
+Estimate the simple effect of increasing N when $Cu = 100$. Report a standard error and a 95% confidence interval for the effect. In light of this interval, can you declare the observed effect “significant” at level of significance $\alpha = .05$?
+
+First let us find the simple effect of increasing N when $Cu = 100$. We are going to call this effect $\hat{\theta_4} = \bar{y_4} - \bar{y_3} = 127 - 146 = -19$. 
+
+Next we are going to report a standard error which is $\hat{SE}(\sum c_i\bar{y_{i.}}) = \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}}$. Now, we know this contrast is just $(0, 0, -1, 1)'$ because we said that $\hat{\theta_4} = \bar{y_4} - \bar{y_3}$. We also said in **Part E** that the $MS(E) = \frac{1}{4} * \sum_{i=1}^{4} s_i^2 = 36 + 16 + 58.6666667 + 57.3333333 = \frac{1}{4} * 168 = 42$. So we can say that $\hat{SE}(\sum c_i\bar{y_{i.}}) = \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}} = \sqrt{42 * (\frac{0^2}{4} + \frac{0^2}{4} + \frac{-1^2}{4} + \frac{1^2}{4})} = \sqrt{42 * (\frac{2}{4})} = \sqrt{21} =$ `r sqrt(21)`. So, $\hat{SE}(\sum c_i\bar{y_{i.}}) =$ `r sqrt(21)`. 
+
+Now we can get the confidence interval for these two effects, which is just saying $\hat{\theta_4} \pm t(\alpha / 2, N-t) * \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}}$ Now we know that $\hat{\theta_4} = 19$, $\alpha = 0.05$ since it is a 95% confidence interval, $N-t = n(ab - 1) = 4(2*2-1) 4*3 = 12$, and $\sqrt{MS(E) * \sum \frac{c_i^2}{n_i}} = \hat{SE}(\sum c_i\bar{y_{i.}}) = \sqrt{21}$. Therefore, $\hat{\theta_4} \pm t(\alpha / 2, N-t) * \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}} = -19 \pm t(0.05/2, 12) * \sqrt{21} = -19 \pm t(0.025, 12) * \sqrt{21}$. So our 95% confidence interval is ($-19 - t(0.025, 12) * \sqrt{21}, -19 + t(0.025, 12) * \sqrt{21}$). Now $t(0.025, 12) =$ `qt(0.025, 12, lower.tail = F)` = `r qt(0.025, 12, lower.tail = F)`. Therefore our confidence interval when plugging the t-value of $t(0.025, 12)$ into it which was ($-19 - t(0.025, 12) * \sqrt{21}, -19 + t(0.025, 12) * \sqrt{21}$) is (`r -19 - qt(0.025, 12, lower.tail = F) * sqrt(21)`, `r -19 + qt(0.025, 12, lower.tail = F) * sqrt(21)`).
+
+Lastly, since we can see that 0 is not contained in our 95% confidence interval we have statistically significant evidence to conclude (or declare) that the observed effect is “significant” at level of significance of $\alpha = .05$.
+
+## Part I
+
+Estimate the main effect of increasing Cu. Give the F-ratio for a test of no effect, along with degrees of freedom.
+
