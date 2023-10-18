@@ -55,7 +55,7 @@ This is just finding the difference between **Part B** and **Part C**. For purpo
 
 Using significance level $\alpha = .05$, test the hypothesis that the simple effects of copper are constant across levels of nitrogen.
 
-Here we are going to do a F-test to see if this simple effects of copper are consistent across the different levels of nitrogen. Our null hypothesis is that the effects of copper are consistent across all levels of nitrogen. The alternative hypothesis is that they are not. We are going to use our result from **Part D** to help us get our appropriate F-value. In this case, we have shown that $\hat{\theta_3} = 16$. Now let us note the contrast which is $(-1, 1, 1, -1)'$ which will get us our $c_i$ values later. To get our F-value, we must use the formula $F = \frac{SS(\hat{\theta_3}) / (a-1) (b-1)}{MS(E)}$ where $a = 2$ because there are only 2 nitrogen levels, $b = 2$ because there are only 2 copper levels, $SS(\hat{\theta_3}) = \frac{(\hat{\theta_3})^2}{\sum_{i=1}^{4} \frac{c_i^2}{n_i}} = \frac{16^2}{\frac{-1^2}{4} + \frac{1^2}{4} + \frac{1^2}{4} + \frac{-1^2}{4}} = \frac{256}{4 * \frac{1}{4}} = \frac{256}{1} = 256$, $MS(E) = \frac{1}{4} * \sum_{i=1}^{4} s_i^2 = 36 + 16 + 58.6666667 + 57.3333333 = \frac{1}{4} * 168 = 42$. Now that we have found all the values for our F-test we can get our F-value to be $F = \frac{SS(\hat{\theta_3}) / (a-1) (b-1)}{MS(E)} = \frac{256 / (2-1) (2-1)}{42} = \frac{256}{42} = 6.095238$ on degrees of freedom $df = (a-1) * (b-1), n(ab-1) = (2-1)(2-1), 4(2*2-1) = 1*1, 4*3 = 1, 12$. We can get our F-critical value (or $F^*$) by using the `qf()` function in R. Our $F^*$ value is `qf(1-alpha, df1, df2)` = `qf(1-.05, 1, 12)` = `r qf(1-.05, 1, 12)`. Since the F-value we obtained is greater the F-critical value (6.095238 > `r qf(1-.05, 1, 12)`) then we reject our null hypothesis and say that the simple effects of copper are **not** consistent across the different levels of nitrogen. 
+Here we are going to do a F-test to see if this simple effects of copper are consistent across the different levels of nitrogen. Our null hypothesis is that the effects of copper are consistent across all levels of nitrogen. The alternative hypothesis is that they are not. We are going to use our result from **Part D** to help us get our appropriate F-value. In this case, we have shown that $\hat{\theta_3} = 16$. Now let us note the contrast which is $(-1, 1, 1, -1)'$ which will get us our $c_i$ values later. To get our F-value, we must use the formula $F = \frac{SS(\hat{\theta_3}) / (a-1) (b-1)}{MS(E)}$ where $a = 2$ because there are only 2 nitrogen levels, $b = 2$ because there are only 2 copper levels, $SS(\hat{\theta_3}) = \frac{(\hat{\theta_3})^2}{\sum_{i=1}^{4} \frac{c_i^2}{n_i}} = \frac{16^2}{\frac{-1^2}{4} + \frac{1^2}{4} + \frac{1^2}{4} + \frac{-1^2}{4}} = \frac{256}{4 * \frac{1}{4}} = \frac{256}{1} = 256$, $MS(E) = \frac{1}{4} * \sum_{i=1}^{4} s_i^2 = 36 + 16 + 58.6666667 + 57.3333333 = \frac{1}{4} * 168 = 42$. Now that we have found all the values for our F-test we can get our F-value to be $F = \frac{SS(\hat{\theta_3}) / (a-1) (b-1)}{MS(E)} = \frac{256 / (2-1) (2-1)}{42} = \frac{256}{42} = 6.095238$ on degrees of freedom $df = (a-1) * (b-1), ab(n-1) = (2-1)(2-1), 2*2(4-1) = 1*1, 4*3 = 1, 12$. We can get our F-critical value (or $F^*$) by using the `qf()` function in R. Our $F^*$ value is `qf(1-alpha, df1, df2)` = `qf(1-.05, 1, 12)` = `r qf(1-.05, 1, 12)`. Since the F-value we obtained is greater the F-critical value (6.095238 > `r qf(1-.05, 1, 12)`) then we reject our null hypothesis and say that the simple effects of copper are **not** consistent across the different levels of nitrogen. 
 
 ## Part F
 
@@ -77,7 +77,7 @@ First let us find the simple effect of increasing N when $Cu = 100$. We are goin
 
 Next we are going to report a standard error which is $\hat{SE}(\sum c_i\bar{y_{i.}}) = \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}}$. Now, we know this contrast is just $(0, 0, -1, 1)'$ because we said that $\hat{\theta_4} = \bar{y_4} - \bar{y_3}$. We also said in **Part E** that the $MS(E) = \frac{1}{4} * \sum_{i=1}^{4} s_i^2 = 36 + 16 + 58.6666667 + 57.3333333 = \frac{1}{4} * 168 = 42$. So we can say that $\hat{SE}(\sum c_i\bar{y_{i.}}) = \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}} = \sqrt{42 * (\frac{0^2}{4} + \frac{0^2}{4} + \frac{-1^2}{4} + \frac{1^2}{4})} = \sqrt{42 * (\frac{2}{4})} = \sqrt{21} =$ `r sqrt(21)`. So, $\hat{SE}(\sum c_i\bar{y_{i.}}) =$ `r sqrt(21)`. 
 
-Now we can get the confidence interval for these two effects, which is just saying $\hat{\theta_4} \pm t(\alpha / 2, N-t) * \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}}$ Now we know that $\hat{\theta_4} = 19$, $\alpha = 0.05$ since it is a 95% confidence interval, $N-t = n(ab - 1) = 4(2*2-1) 4*3 = 12$, and $\sqrt{MS(E) * \sum \frac{c_i^2}{n_i}} = \hat{SE}(\sum c_i\bar{y_{i.}}) = \sqrt{21}$. Therefore, $\hat{\theta_4} \pm t(\alpha / 2, N-t) * \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}} = -19 \pm t(0.05/2, 12) * \sqrt{21} = -19 \pm t(0.025, 12) * \sqrt{21}$. So our 95% confidence interval is ($-19 - t(0.025, 12) * \sqrt{21}, -19 + t(0.025, 12) * \sqrt{21}$). Now $t(0.025, 12) =$ `qt(0.025, 12, lower.tail = F)` = `r qt(0.025, 12, lower.tail = F)`. Therefore our confidence interval when plugging the t-value of $t(0.025, 12)$ into it which was ($-19 - t(0.025, 12) * \sqrt{21}, -19 + t(0.025, 12) * \sqrt{21}$) is (`r -19 - qt(0.025, 12, lower.tail = F) * sqrt(21)`, `r -19 + qt(0.025, 12, lower.tail = F) * sqrt(21)`).
+Now we can get the confidence interval for these two effects, which is just saying $\hat{\theta_4} \pm t(\alpha / 2, N-t) * \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}}$ Now we know that $\hat{\theta_4} = 19$, $\alpha = 0.05$ since it is a 95% confidence interval, $N-t = ab(n-1) = 2*2(4-1) 4*3 = 12$, and $\sqrt{MS(E) * \sum \frac{c_i^2}{n_i}} = \hat{SE}(\sum c_i\bar{y_{i.}}) = \sqrt{21}$. Therefore, $\hat{\theta_4} \pm t(\alpha / 2, N-t) * \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}} = -19 \pm t(0.05/2, 12) * \sqrt{21} = -19 \pm t(0.025, 12) * \sqrt{21}$. So our 95% confidence interval is ($-19 - t(0.025, 12) * \sqrt{21}, -19 + t(0.025, 12) * \sqrt{21}$). Now $t(0.025, 12) =$ `qt(0.025, 12, lower.tail = F)` = `r qt(0.025, 12, lower.tail = F)`. Therefore our confidence interval when plugging the t-value of $t(0.025, 12)$ into it which was ($-19 - t(0.025, 12) * \sqrt{21}, -19 + t(0.025, 12) * \sqrt{21}$) is (`r -19 - qt(0.025, 12, lower.tail = F) * sqrt(21)`, `r -19 + qt(0.025, 12, lower.tail = F) * sqrt(21)`).
 
 Lastly, since we can see that 0 is not contained in our 95% confidence interval we have statistically significant evidence to conclude (or declare) that the observed effect is “significant” at level of significance of $\alpha = .05$.
 
@@ -87,7 +87,7 @@ Estimate the main effect of increasing Cu. Give the F-ratio for a test of no eff
 
 We can estimate the main effects of increasing Cu by finding the mean of the FCR scores when $Cu = 100$ and then subtract the mean scores when $Cu = 10$. Therefore, we can say that this estimation which we will call $\hat{\theta_5} = \frac{1}{2} * (\bar{y_3} + \bar{y_4}) - \frac{1}{2} * (\bar{y_1} + \bar{y_2}) = \frac{1}{2} * (\bar{y_3} + \bar{y_4} - \bar{y_1} - \bar{y_2}) = \frac{1}{2} * (146 + 127 - 133 - 130) = 5$. Therefore the estimate on the main effect of increasing Cu is $\hat{\theta_5} = 5$. 
 
-Now we are going to get a F-ratio for an F-test for a test of no effect. We know that we can get the F-value from the equation $F = \frac{SS(\hat{\theta_5}) / df_1}{MS(E)}$ where $SS(\hat{\theta_5}) = \frac{\hat{\theta_5}^2}{\frac{1}{n_{group_1}} + \frac{1}{n_{group_2}}} = \frac{5^2}{\frac{1}{4+4} + \frac{1}{4+4}} = \frac{25}{\frac{2}{8}} = 100$, $df_1 = 1$ since we are only 2 different options (and then subtract 1 to get 1 numerator degree of freedom), and from **Part E** we showed the $MS(E) = \frac{1}{4} * \sum_{i=1}^{4} s_i^2 = 36 + 16 + 58.6666667 + 57.3333333 = \frac{1}{4} * 168 = 42$. Therefore our F-value is $F = \frac{SS(\hat{\theta_5}) / df_1}{MS(E)} = \frac{100/1}{42} =$ `r 100/42` which has 1 numerator degree of freedom and $n(ab - 1) = 4(2*2-1) = 12$ denominator degrees of freedom. Therefore our F-ratio is $F =$ `r 100/42` with 1, 12 degrees of freedom. Note we cannot make a conclusion since we are not given a significance level.
+Now we are going to get a F-ratio for an F-test for a test of no effect. We know that we can get the F-value from the equation $F = \frac{SS(\hat{\theta_5}) / df_1}{MS(E)}$ where $SS(\hat{\theta_5}) = \frac{\hat{\theta_5}^2}{\frac{1}{n_{group_1}} + \frac{1}{n_{group_2}}} = \frac{5^2}{\frac{1}{4+4} + \frac{1}{4+4}} = \frac{25}{\frac{2}{8}} = 100$, $df_1 = 1$ since we are only 2 different options (and then subtract 1 to get 1 numerator degree of freedom), and from **Part E** we showed the $MS(E) = \frac{1}{4} * \sum_{i=1}^{4} s_i^2 = 36 + 16 + 58.6666667 + 57.3333333 = \frac{1}{4} * 168 = 42$. Therefore our F-value is $F = \frac{SS(\hat{\theta_5}) / df_1}{MS(E)} = \frac{100/1}{42} =$ `r 100/42` which has 1 numerator degree of freedom and $ab(n-1) = 2*2(4-1) = 12$ denominator degrees of freedom. Therefore our F-ratio is $F =$ `r 100/42` with 1, 12 degrees of freedom. Note we cannot make a conclusion since we are not given a significance level.
 
 ## Part J
 
@@ -107,7 +107,7 @@ Now let us find the estimate of the main effect of increasing nitrogen by findin
 
 Obtain an ANOVA table which partitions the variability between the four treatments into meaningful components.
 
-We found the sum of squares for Copper, Nitrogen, and Nitrogen:Copper (interaction). Keep in mind the degrees of freedom are all 1 since there are only 2 different values of Copper and 2 different values of Nitrogen. So $df_{Nitrogen} = 2-1 = 1$, $df_{Copper} = 2-1 = 1$, $df_{Nitrogen:Cooper} = (2-1)(2-1) = 1$. Moreover since the degrees of freedom are all 1 for these parts then the sum of squares for these values equals their respective mean squared values too (because of dividing the sum of squares values by 1 degree of freedom). Next, we know that the $MS(E) = 42$ from **Part E**. Going backwards, we have shown in earlier parts that the error degrees of freedom is 12 (from $n(ab-1) = 4(2*2-1) = 12$). So the $SS(Error) = MS(E) * df_{Error} = 42 * 12 = 504$. Lastly we can get the corrected total values by saying that degrees of freedom is $a*b-1 = 4*4-1 = 15$ and the sum of squares value is adding up the previous 4 sum of squares which is $100+484+256+504 = 1344$. 
+We found the sum of squares for Copper, Nitrogen, and Nitrogen:Copper (interaction). Keep in mind the degrees of freedom are all 1 since there are only 2 different values of Copper and 2 different values of Nitrogen. So $df_{Nitrogen} = 2-1 = 1$, $df_{Copper} = 2-1 = 1$, $df_{Nitrogen:Cooper} = (2-1)(2-1) = 1$. Moreover since the degrees of freedom are all 1 for these parts then the sum of squares for these values equals their respective mean squared values too (because of dividing the sum of squares values by 1 degree of freedom). Next, we know that the $MS(E) = 42$ from **Part E**. Going backwards, we have shown in earlier parts that the error degrees of freedom is 12 (from $ab(n-1) = 4(2*2-1) = 12$). So the $SS(Error) = MS(E) * df_{Error} = 42 * 12 = 504$. Lastly we can get the corrected total values by saying that degrees of freedom is $a*b-1 = 4*4-1 = 15$ and the sum of squares value is adding up the previous 4 sum of squares which is $100+484+256+504 = 1344$. 
 
 Next we need to show F-values. The F-value is shown by doing $F = \frac{SS(\hat{\theta_i}) / df}{MS(E)}$. We are going to show the different F-values below.
 - For Copper: $F = \frac{100 / 1}{42} =$ `r 100/42` on degrees of freedom 1, 12
@@ -144,3 +144,104 @@ And now we have made appropriate ANOVA tables showing the effects of copper and 
 ## Part M
 
 Briefly characterize the observed effects of copper and nitrogen on FCR, reporting appropriate p-values along the way.
+
+Here we are going to look at three things: if copper alone has an effect on FCR, if nitrogen alone has an effect on FCR, and if the interaction between copper and nitrogen has an effect on FCR. Please note the ANOVA table we used for **Part L** which is attached below.
+
+|Source | DF | Sum of Squares | Mean Square | F-value | P-value |
+|:-----|:------:|:------:|:------:|:------:|------:|
+|Copper | 1 | 100 | 100 | `r 100/42` | `r pf(100/42, 1, 12, lower.tail = F)` |
+|Nitrogen | 1 | 484 | 484 | `r 484/42` | `r pf(484/42, 1, 12, lower.tail = F)` |
+|Copper and Nitrogen Interaction | 1 | 256 | 256 | `r 256/42` | `r pf(256/42, 1, 12, lower.tail = F)` |
+|Error | 12 | 504 | 42 |  |  |
+|Corrected Total | 15 | 1344 |  |  |  |
+
+- Does copper have an effect on FCR? What we are going to test here is if copper does have this effect. In this case, we called copper $\alpha_i$ so we are going to test using the null hypothesis that $H_0: \alpha_i = 0$ with the alternative hypothesis being $H_A: \alpha_i \neq 0$. From **Part L** and what is attached to this part, we made an ANOVA table that went through and did this test by an appropriate F-test. Remember our F-value is calculated by $F = \frac{SS(Copper) / df_{Copper}}{MS(E)} = \frac{100/1}{42} =$ `r 100/42`. We then find the appropriate p-value using the F-value and the appropriate degrees of freedom which is 1, 12 (1 from the degrees of freedom for copper and 12 being the error degrees of freedom). We use the function `pf()` with inputs of the F-value we got along with the first and second degrees of freedom. Thus, we should be getting `pf(100/42, 1, 12, lower.tail = F)` which gives us the p-value `r pf(100/42, 1, 12, lower.tail = F)`. Most of the time, we use a significance level of $\alpha = 0.05$. Since our p-value is larger than our alpha level, we do not have significantly significant evidence to say that the copper amount has an effect on FCR. Therefore, it is plausible to say that copper might not have an effect on FCR.
+- Does nitrogen have an effect on FCR? What we are going to test here is if nitrogen does have this effect. In this case, we called nitrogen $\beta_j$ so we are going to test using the null hypothesis that $H_0: \beta_j = 0$ with the alternative hypothesis being $H_A: \beta_j \neq 0$. From **Part L** and what is attached to this part, we made an ANOVA table that went through and did this test by an appropriate F-test. Remember our F-value is calculated by $F = \frac{SS(Nitrogen) / df_{Nitrogen}}{MS(E)} = \frac{484/1}{42} =$ `r 484/42`. We then find the appropriate p-value using the F-value and the appropriate degrees of freedom which is 1, 12 (1 from the degrees of freedom for nitrogen and 12 being the error degrees of freedom). We use the function `pf()` with inputs of the F-value we got along with the first and second degrees of freedom. Thus, we should be getting `pf(484/42, 1, 12, lower.tail = F)` which gives us the p-value `r pf(484/42, 1, 12, lower.tail = F)`. Most of the time, we use a significance level of $\alpha = 0.05$. Since our p-value is much smaller than our alpha level (and most significance levels people tend to use), we have significantly significant evidence to say that the nitrogen amount has an effect on FCR. Therefore, it is plausible to say that nitrogen has an effect on FCR.
+- Does the copper and nitrogen interaction have an effect on FCR? What we are going to test here is if the copper and nitrogen interaction has this effect. In this case, we called the copper and nitrogen interaction $(\alpha \beta)_{ij}$ so we are going to test using the null hypothesis that $H_0: (\alpha \beta)_{ij} = 0$ with the alternative hypothesis being $H_A: (\alpha \beta)_{ij} \neq 0$. From **Part L** and what is attached to this part, we made an ANOVA table that went through and did this test by an appropriate F-test. Remember our F-value is calculated by $F = \frac{SS(Copper*Nitrogen) / df_{Copper*Nitrogen}}{MS(E)} = \frac{256/1}{42} =$ `r 256/42`. We then find the appropriate p-value using the F-value and the appropriate degrees of freedom which is 1, 12 (1 from the degrees of freedom for the copper and nitrogen interaction and 12 being the error degrees of freedom). We use the function `pf()` with inputs of the F-value we got along with the first and second degrees of freedom. Thus, we should be getting `pf(256/42, 1, 12, lower.tail = F)` which gives us the p-value `r pf(256/42, 1, 12, lower.tail = F)`. Most of the time, we use a significance level of $\alpha = 0.05$. Since our p-value is smaller than our alpha level, we have significantly significant evidence to say that the copper and nitrogen interaction amount has an effect on FCR. Therefore, it is plausible to say that the copper and nitrogen interaction has an effect on FCR. Now please note we would be saying the exact opposite if our significance level ($\alpha$) was less than the p-value. In this case, we would say that we do not have significantly significant evidence to say that the copper and nitrogen interaction amount has an effect on FCR; moreover, it would be plausible to say that the copper and nitrogen interaction might not have an effect on FCR. So it all depends with the interaction term of what significance level you want to use.
+
+In conclusion, from doing our appropriate statistical tests we have found that it is plausible to say that copper has an effect on FCR, nitrogen does not have an effect on FCR, and the copper and nitrogen interaction has an effect on FCR (as long as the significance level is the standard $\alpha$ level is 0.05 -- note if the significance level is less than `r pf(256/42, 1, 12, lower.tail = F)` then we would be saying that is plausible to say that the copper and nitrogen interaction does not have an effect on FCR). 
+
+## Part N
+
+It turns out that a control was also run (with $n = 4$), without any added Cu or N. The mean FCR was $\bar{y_0} = 131$. The observed contrast of this mean with the average of the others is $\hat{\theta} = 131 - \frac{1}{4} (133 + 130 + 146 + 127) = -3$. Compute $SS(diet)$, the diet sum of squares (on $df = 5 - 1 = 4$) from a one-way analysis of variance using all five diets.
+
+We know that the sum of squares for the control (or this contrast which is $(1, - \frac{1}{4}, - \frac{1}{4}, - \frac{1}{4}, - \frac{1}{4})'$) is equal to $SS(control) = SS(\hat{\theta}) = \frac{\hat{\theta}^2}{\sum_{i=1}^t \frac{c_i^2}{n_i}}$. We know in this case that $\hat{\theta} = -3$ and $\sum_{i=1}^t \frac{c_i^2}{n_i} = \frac{1^2}{4} + \frac{\frac{-1}{4}^2}{4} + \frac{\frac{-1}{4}^2}{4} + \frac{\frac{-1}{4}^2}{4} + \frac{\frac{-1}{4}^2}{4} = \frac{1^2}{4} + 4 * \frac{\frac{-1}{4}^2}{4} = \frac{1}{4} + \frac{1}{16} = \frac{5}{16}$. Now $SS(control) = SS(\hat{\theta}) = \frac{\hat{\theta}^2}{\sum_{i=1}^t \frac{c_i^2}{n_i}} = \frac{-3^2}{\frac{5}{16}} =$ `r (-3)**2 / (5 / 16)`. Therefore the Sum of Squares of just the control is `r (-3)**2 / (5 / 16)`.
+
+Now to get the sum of squares for diet we need to add $SS(Diet) = SS(copper) + SS(nitrogen) + SS(copper:nitrogen) + SS(control) = 100 + 484 + 256 + 28.8 = 868.8$. Therefore, $SS(Diet) = 868.8$.
+
+# Problem 2
+
+First we are going to read in the data.
+```{r read in problem 2, warning=F, message=F}
+library(tidyverse)
+(barley <- read_table("barley.dat"))
+```
+
+## Part A
+
+Posit a factorial effects model for these data. Why might the homogeneity of variance assumption might be questionable?
+
+We can say that this factorial effects model is $Y_{ijk} = \mu + \alpha_i + \beta_j + (\alpha \beta)_{ij} + E_{ijk}$ where for $i = 1, 2, 3, 4, 5$ and $j = 1, 2$ and $E_{ijk}$ are i.i.d $N(0, \sigma^2)$ errors. We can store this model below.
+```{r problem 2 model}
+barleyModel <- lm(y ~ as.factor(seedage) + as.factor(h20) + as.factor(seedage)*as.factor(h20), barley)
+```
+
+The homogeneity of variance assumption might be questionable because where you plant the seeds (the land plot and its soil) could cause a difference in the seed production and thus these confounding variables could cause unequal variance. 
+
+## Part B
+
+Report the p-value for a test of interaction between water and seed age.
+
+Here we can make an ANOVA test for our model we made before in **Part A**.
+```{r anova table problem 2}
+anova(barleyModel)
+```
+
+As we can see from our ANOVA table, the p-value is `r anova(barleyModel)$"Pr(>F)"[[3]]`, which is a fairly high value that with most significance levels we use cause us to say there is not enough evidence of statistical significance for the interaction term. 
+
+If we wanted, we could have done this without the ANOVA function if we knew the MS(E) and the SS(Interaction). From the table, we could see that the $SS(Interaction) = 208.87$ and our $MS(E) = 52.22$. We also know that the interaction degrees of freedom is $(a-1)(b-1) = (5-1)(2-1) = 4*1 = 4$. We also know our error degrees of freedom is $a*b(n-1) = 5*2(3-1) = 10*2 = 20$. Now our F-value is $F = \frac{SS(interaction) / df1}{MS(E)} = \frac{208.87/4}{59.73} = 0.8742$ with degrees of freedom 4, 20. We can use the `pf()` function with inputs `pf(F-value, df1, df2, lower.tail=F)` = `pf(0.8742, 4, 20, lower.tail=F)` = `r pf(0.8742, 4, 20, lower.tail=F)` which rounds to the same p-value we got from our ANOVA table. Therefore our p-value is about `r round(pf(0.8742, 4, 20, lower.tail=F), 4)`.
+
+## Part C (**Double check with Module 3 Notes**)
+
+What does it mean for the effects of water and seed age to be plausibly additive?
+
+If we are saying the effects to be plausibly additive, we are saying that these effects of water and seed age do not interact and that each effect has an additive effect on the response variable which in this case is y (or the number of seeds that sprout).
+
+## Part D
+
+Obtain a 95% confidence interval for the main effect of water. Does more water lead to more sprouting seeds?
+
+Here we are going to find the means of our different groupings of water and seed age.
+```{r problem 2 means}
+(barleyGroupMeans <- barley %>%
+  group_by(h20, seedage) %>%
+  summarize(mean = mean(y), count = length(y)))
+```
+
+We have now shown the group means for each amount of water along with seed age for each plot that has seeds sprout. The next thing we are going to do is find the mean effect of water difference by subtracting the mean value of `h20 = 1` from the mean value of `h20 = 2` (or another way of saying this is mean(h20 = 2) - mean(h20 = 1)) and call this $\hat{\theta}$. Then we are going to make a 95% confidence interval by the formula: $\hat{\theta} \pm t(\alpha/2, a*b(n-1)) \sqrt{MS(E)\sum \frac{c_i}{n_i}} = \hat{\theta} \pm t(\alpha/2, N-t) \sqrt{MS(E)\sum \frac{c_i}{n_i}}$ where we know that $\alpha = 0.05$, $MS(E) \approx 59.73$ from **Part B** ANOVA table, and $a*b(n-1) = 5*2(3-1) = 20$. We also know that the contrast is $(-1, 1)'$ with $n_i = 15$ (since there are 5 groups being looked at with 3 in each group so 15 total observations in each part of the contrast. Thus, $\sum \frac{c_i}{n_i} = \frac{-1^2}{15} + \frac{1^2}{15} = \frac{1}{15} + \frac{1}{15} = \frac{2}{15}$. We are going to show this confidence interval below with the values we have made.
+```{r main effect water}
+# Get the main effect (theta_hat)
+theta_hat <- mean(barleyGroupMeans$mean[1:5]) - mean(barleyGroupMeans$mean[6:10])
+
+# Make the confidence interval
+mse <- anova(barleyModel)$"Mean Sq"[[4]]
+df2 <- anova(barleyModel)$Df[[4]]
+alpha <- 0.05
+contrast_sum <- 2/15
+multiplier <- qt(alpha/2, df2, lower.tail = F)
+
+# Lower Bound
+lower_bound <- theta_hat - (multiplier * sqrt(mse * contrast_sum))
+
+# Upper bound
+upper_bound <- theta_hat + (multiplier * sqrt(mse * contrast_sum))
+
+# Final confidence interval
+(confidence_interval <- c(lower_bound, upper_bound))
+```
+
+As we can see our 95% confidence interval gives us a lower bound of `r confidence_interval[[1]]` and an upper bound of `r confidence_interval[[2]]`. This means we are 95% confident that the main effect of water is between `r confidence_interval[[1]]` and `r confidence_interval[[2]]`. Since 0 is not in the 95% confidence interval (and all values are positive since we found the effect by doing the mean of more water minus the mean of less water), we have statistically significant evidence that adding more water leads to more sprouting seeds. Lastly, I would say that these results should have some caution to them since in our model used to test this has questionable homogeneous variance (as said in **Part A**).
+
+## Part E
+
+Estimate the *linear* effect of seed age. Are older seeds more likely to sprout?
