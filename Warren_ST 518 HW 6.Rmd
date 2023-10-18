@@ -85,3 +85,62 @@ Lastly, since we can see that 0 is not contained in our 95% confidence interval 
 
 Estimate the main effect of increasing Cu. Give the F-ratio for a test of no effect, along with degrees of freedom.
 
+We can estimate the main effects of increasing Cu by finding the mean of the FCR scores when $Cu = 100$ and then subtract the mean scores when $Cu = 10$. Therefore, we can say that this estimation which we will call $\hat{\theta_5} = \frac{1}{2} * (\bar{y_3} + \bar{y_4}) - \frac{1}{2} * (\bar{y_1} + \bar{y_2}) = \frac{1}{2} * (\bar{y_3} + \bar{y_4} - \bar{y_1} - \bar{y_2}) = \frac{1}{2} * (146 + 127 - 133 - 130) = 5$. Therefore the estimate on the main effect of increasing Cu is $\hat{\theta_5} = 5$. 
+
+Now we are going to get a F-ratio for an F-test for a test of no effect. We know that we can get the F-value from the equation $F = \frac{SS(\hat{\theta_5}) / df_1}{MS(E)}$ where $SS(\hat{\theta_5}) = \frac{\hat{\theta_5}^2}{\frac{1}{n_{group_1}} + \frac{1}{n_{group_2}}} = \frac{5^2}{\frac{1}{4+4} + \frac{1}{4+4}} = \frac{25}{\frac{2}{8}} = 100$, $df_1 = 1$ since we are only 2 different options (and then subtract 1 to get 1 numerator degree of freedom), and from **Part E** we showed the $MS(E) = \frac{1}{4} * \sum_{i=1}^{4} s_i^2 = 36 + 16 + 58.6666667 + 57.3333333 = \frac{1}{4} * 168 = 42$. Therefore our F-value is $F = \frac{SS(\hat{\theta_5}) / df_1}{MS(E)} = \frac{100/1}{42} =$ `r 100/42` which has 1 numerator degree of freedom and $n(ab - 1) = 4(2*2-1) = 12$ denominator degrees of freedom. Therefore our F-ratio is $F =$ `r 100/42` with 1, 12 degrees of freedom. Note we cannot make a conclusion since we are not given a significance level.
+
+## Part J
+
+Given the analysis you’ve done so far, is it appropriate to say the the observed effect of copper in this experiment is not significant (using level $\alpha = .05$)? Explain.
+
+From **Part I** we showed the F-ratio we are using to do this test is $F =$ `r 100/42` with 1, 12 degrees of freedom. To compare this to our F-critical value, we can get the F-critical value for a significance level of 0.05 by using the `qf()` function and inputting `qt(alpha, df1, df2, lower.tail = F)` which in this case is `qf(0.05, 1, 12, lower.tail = F)` which gives us the corresponding F-critical value of `r qf(0.05, 1, 12, lower.tail = F)`. Since this F-critical value is larger than the F-value we calculated from our test in **Part I** we fail to reject the null hypothesis that there is no effect of increasing copper. Therefore it is appropriate to say the the observed effect of copper in this experiment is not significant. 
+
+## Part K
+
+Report the contrast sums of squares for the main effect of copper and the main effect of nitrogen.
+
+From **Part J** we found the contrast sums of squares for the main effect of copper which was done by $SS(\hat{\theta_5}) = \frac{\hat{\theta_5}^2}{\frac{1}{n_{group_1}} + \frac{1}{n_{group_2}}} = \frac{5^2}{\frac{1}{4+4} + \frac{1}{4+4}} = \frac{25}{\frac{2}{8}} = 100$. So the contrast sums of squares for the main effect of copper is $SS(\hat{\theta_5}) = 100$
+
+Now let us find the estimate of the main effect of increasing nitrogen by finding the mean of the FCR scores when $N = 45$ and then subtract the mean scores when $N = 25$. Therefore, we can say that this estimation which we will call $\hat{\theta_6} = \frac{1}{2} * (\bar{y_2} + \bar{y_4}) - \frac{1}{2} * (\bar{y_1} + \bar{y_3}) = \frac{1}{2} * (\bar{y_2} + \bar{y_4} - \bar{y_1} - \bar{y_3}) = \frac{1}{2} * (130 + 127 - 133 - 146) = 5$. Therefore the estimate on the main effect of increasing Cu is $\hat{\theta_5} = -11$. Now we can find the contrast sums of squares for the main effect of nitrogen which can be done by $SS(\hat{\theta_6}) = \frac{\hat{\theta_6}^2}{\frac{1}{n_{group_1}} + \frac{1}{n_{group_2}}} = \frac{-11^2}{\frac{1}{4+4} + \frac{1}{4+4}} = \frac{121}{\frac{2}{8}} = 484$. So the contrast sums of squares for the main effect of nitrogen is $SS(\hat{\theta_6}) = 484$.
+
+## Part L
+
+Obtain an ANOVA table which partitions the variability between the four treatments into meaningful components.
+
+We found the sum of squares for Copper, Nitrogen, and Nitrogen:Copper (interaction). Keep in mind the degrees of freedom are all 1 since there are only 2 different values of Copper and 2 different values of Nitrogen. So $df_{Nitrogen} = 2-1 = 1$, $df_{Copper} = 2-1 = 1$, $df_{Nitrogen:Cooper} = (2-1)(2-1) = 1$. Moreover since the degrees of freedom are all 1 for these parts then the sum of squares for these values equals their respective mean squared values too (because of dividing the sum of squares values by 1 degree of freedom). Next, we know that the $MS(E) = 42$ from **Part E**. Going backwards, we have shown in earlier parts that the error degrees of freedom is 12 (from $n(ab-1) = 4(2*2-1) = 12$). So the $SS(Error) = MS(E) * df_{Error} = 42 * 12 = 504$. Lastly we can get the corrected total values by saying that degrees of freedom is $a*b-1 = 4*4-1 = 15$ and the sum of squares value is adding up the previous 4 sum of squares which is $100+484+256+504 = 1344$. 
+
+Next we need to show F-values. The F-value is shown by doing $F = \frac{SS(\hat{\theta_i}) / df}{MS(E)}$. We are going to show the different F-values below.
+- For Copper: $F = \frac{100 / 1}{42} =$ `r 100/42` on degrees of freedom 1, 12
+- For Nitrogen: $F = \frac{484 / 1}{42} =$ `r 484/42` on degrees of freedom 1, 12
+- For Copper and Nitrogen Interaction: $F = \frac{256 / 1}{42} =$ `r 256/42` on degrees of freedom 1, 12
+
+Lastly, we need to get the P-values for the respective things we are modeling. Thus, we are going to use the `pf()` function to do this by inputting `pf(F-value, df1, df2, lower.tail = F)`. We will show this below.
+- For Copper: p-value is `pf(100/42, 1, 12, lower.tail = F)` = `r pf(100/42, 1, 12, lower.tail = F)`
+- For Nitrogen: p-value is `pf(484/42, 1, 12, lower.tail = F)` = `r pf(484/42, 1, 12, lower.tail = F)`
+- For Copper and Nitrogen Interaction: p-value is `pf(256/42, 1, 12, lower.tail = F)` = `r pf(256/42, 1, 12, lower.tail = F)`
+
+Now we can make our ANOVA table.
+
+|Source | DF | Sum of Squares | Mean Square | F-value | P-value |
+|:-----|:------:|:------:|:------:|:------:|------:|
+|Copper | 1 | 100 | 100 | `r 100/42` | `r pf(100/42, 1, 12, lower.tail = F)` |
+|Nitrogen | 1 | 484 | 484 | `r 484/42` | `r pf(484/42, 1, 12, lower.tail = F)` |
+|Copper and Nitrogen Interaction | 1 | 256 | 256 | `r 256/42` | `r pf(256/42, 1, 12, lower.tail = F)` |
+|Error | 12 | 504 | 42 |  |  |
+|Corrected Total | 15 | 1344 |  |  |  |
+
+Similarly we could make an ANOVA table combining all treatments (and interaction in on thing called "Model"). Here we would add the sum of squares for copper, nitrogen, and its interaction which would be $100 + 484 + 256 = 840$ with degrees of freedom $1+1+1 = 3$. The mean square value would be the sum of squares divided by the degrees of freedom which is $840/3 = 280$. The F-value would be this mean square value divided by the MS(E) which is $280/42 =$ `r 280/42` on 3, 12 degrees of freedom with the p-value being `pf(280/42, 3, 12, lower.tail = F)` = `r pf(280/42, 3, 12, lower.tail = F)`. 
+
+Now we can make this version of the ANOVA table.
+
+|Source | DF | Sum of Squares | Mean Square | F-value | P-value |
+|:-----|:------:|:------:|:------:|:------:|------:|
+|Model | 3 | 840 | 280 | `r 280/42` | `r pf(280/42, 3, 12, lower.tail = F)` |
+|Error | 12 | 504 | 42 |  |  |
+|Corrected Total | 15 | 1344 |  |  |  |
+
+And now we have made appropriate ANOVA tables showing the effects of copper and nitrogen (along with its interaction effect).
+
+## Part M
+
+Briefly characterize the observed effects of copper and nitrogen on FCR, reporting appropriate p-values along the way.
