@@ -245,3 +245,67 @@ As we can see our 95% confidence interval gives us a lower bound of `r confidenc
 ## Part E
 
 Estimate the *linear* effect of seed age. Are older seeds more likely to sprout?
+
+## Part F
+
+After averaging over to two levels of water, test for lack of fit of a model in which the effect of seed age on sprouting frequency is linear.
+
+# Problem 3
+
+First we are going to read in the data.
+```{r problem 3 read in}
+(shrimp <- read_table("shrimp.dat"))
+```
+
+## Part A
+
+Estimate each of these contrasts.
+
+- $\theta_1 = - \mu_{1.1} + 0 \mu_{1.2} + \mu_{1.3}$
+- $\theta_2 = - \mu_{2.1} + 0 \mu_{2.2} + \mu_{2.3}$
+- $\theta_3 = \mu_{1.1} - 2 \mu_{1.2} + \mu_{1.3}$
+- $\theta_4 = \mu_{2.1} - 2 \mu_{2.2} + \mu_{3.3}$
+- $\theta_5 = \theta_1 - \theta_2$
+- $\theta_6 = \theta_3 - \theta_4$
+
+The first thing we want to do is find the means of y (and standard deviations if we want) of all the groupings of variable a and variable c since for example $\mu_{1.1}$ is saying that we want the mean of our response variable when looking at the first (or lowest level) of our first variable (which is variable a in this case), averaging over second variable (variable b), and then finding the first (or lowest level) of our third variable (which is variable c in this case). I am going to do some `group_by()` and `mean()` along with the `sd()` and the `length()` or count of how many responses we have for each grouping.
+```{r problem 3 means}
+(
+  shrimpGroupMeans <- shrimp %>%
+    group_by(a, c) %>%
+    summarize(
+      mean = mean(y), 
+      sd = sd(y),
+      count = length(y)
+    )
+)
+```
+
+Now that we have our means we can now estimate the contrasts. For purpose of this problem, variable a is temperature, variable b is density, and variable c is salinity.
+
+- $\hat{\theta_1} = - \hat{\mu_{1.1}} + 0 \hat{\mu_{1.2}} + \hat{\mu_{1.3}} = - \hat{\mu_{1.1}} + \hat{\mu_{1.3}}$. From looking at our means table, we can see that $\hat{\mu_{1.1}} =$ `r shrimpGroupMeans$mean[[1]]` because it is where we find our first (lowest) value of variable a and our first (lowest) value of variable c and $\hat{\mu_{1.3}} =$ `r shrimpGroupMeans$mean[[3]]` because it is where we find our first (lowest) value of variable a and our third (highest) value of variable c. Therefore, $\hat{\theta_1} = - \hat{\mu_{1.1}} + 0 \hat{\mu_{1.2}} + \hat{\mu_{1.3}} = - \hat{\mu_{1.1}} + \hat{\mu_{1.3}} =$ `r -1 * shrimpGroupMeans$mean[[1]]` + `r shrimpGroupMeans$mean[[3]]` = `r -1 * shrimpGroupMeans$mean[[1]] + shrimpGroupMeans$mean[[3]]`
+- $\hat{\theta_2} = - \hat{\mu_{2.1}} + 0 \hat{\mu_{2.2}} + \hat{\mu_{2.3}} = - \hat{\mu_{2.1}} + \hat{\mu_{2.3}}$. From looking at our means table, we can see that $\hat{\mu_{2.1}} =$ `r shrimpGroupMeans$mean[[4]]` because it is where we find our second (highest) value of variable a and our first (lowest) value of variable c and $\hat{\mu_{2.3}} =$ `r shrimpGroupMeans$mean[[6]]` because it is where we find our second (highest) value of variable a and our third (highest) value of variable c. Therefore, $\hat{\theta_2} = - \hat{\mu_{2.1}} + 0 \hat{\mu_{2.2}} + \hat{\mu_{2.3}} = - \hat{\mu_{2.1}} + \hat{\mu_{2.3}} =$ `r -1 * shrimpGroupMeans$mean[[4]]` + `r shrimpGroupMeans$mean[[6]]` = `r -1 * shrimpGroupMeans$mean[[4]] + shrimpGroupMeans$mean[[6]]`
+- $\hat{\theta_3} = - \hat{\mu_{1.1}} + 2 \hat{\mu_{1.2}} + \hat{\mu_{1.3}}$ From looking at our means table, we can see that $\hat{\mu_{1.1}} =$ `r shrimpGroupMeans$mean[[1]]` because it is where we find our first (lowest) value of variable a and our first (lowest) value of variable c, $\hat{\mu_{1.2}} =$ `r shrimpGroupMeans$mean[[2]]` because it is where we find our first (lowest) value of variable a and our second (middle) value of variable c, and $\hat{\mu_{1.3}} =$ `r shrimpGroupMeans$mean[[3]]` because it is where we find our first (lowest) value of variable a and our third (highest) value of variable c. Therefore, $\hat{\theta_3} = - \hat{\mu_{1.1}} + 2 \hat{\mu_{1.2}} + \hat{\mu_{1.3}} =$ `r shrimpGroupMeans$mean[[1]]` - 2 x `r shrimpGroupMeans$mean[[2]]` + `r shrimpGroupMeans$mean[[3]]` = `r shrimpGroupMeans$mean[[1]] - 2 * shrimpGroupMeans$mean[[2]] + shrimpGroupMeans$mean[[3]]`
+- $\hat{\theta_4} = - \hat{\mu_{2.1}} + 2 \hat{\mu_{2.2}} + \hat{\mu_{2.3}}$ From looking at our means table, we can see that $\hat{\mu_{2.1}} =$ `r shrimpGroupMeans$mean[[4]]` because it is where we find our second (highest) value of variable a and our first (lowest) value of variable c, $\hat{\mu_{2.2}} =$ `r shrimpGroupMeans$mean[[5]]` because it is where we find our second (highest) value of variable a and our second (middle) value of variable c, and $\hat{\mu_{2.3}} =$ `r shrimpGroupMeans$mean[[6]]` because it is where we find our second (highest) value of variable a and our third (highest) value of variable c. Therefore, $\hat{\theta_4} = - \hat{\mu_{2.1}} + 2 \hat{\mu_{2.2}} + \hat{\mu_{2.3}} =$ `r shrimpGroupMeans$mean[[4]]` - 2 x `r shrimpGroupMeans$mean[[5]]` + `r shrimpGroupMeans$mean[[6]]` = `r shrimpGroupMeans$mean[[4]] - 2 * shrimpGroupMeans$mean[[5]] + shrimpGroupMeans$mean[[6]]`
+- $\hat{\theta_5} = \hat{\theta_1} - \hat{\theta_2}$ We know that $\hat{\theta_1} =$ `r -1 * shrimpGroupMeans$mean[[1]] + shrimpGroupMeans$mean[[3]]` and $\hat{\theta_2} =$ `r -1 * shrimpGroupMeans$mean[[4]] + shrimpGroupMeans$mean[[6]]` so $\hat{\theta_5} = \hat{\theta_1} - \hat{\theta_2} =$ `r -1 * shrimpGroupMeans$mean[[1]] + shrimpGroupMeans$mean[[3]]` - `r -1 * shrimpGroupMeans$mean[[4]] + shrimpGroupMeans$mean[[6]]` = `r (-1 * shrimpGroupMeans$mean[[1]] + shrimpGroupMeans$mean[[3]]) - (-1 * shrimpGroupMeans$mean[[4]] + shrimpGroupMeans$mean[[6]])`
+- $\hat{\theta_6} = \hat{\theta_3} - \hat{\theta_4}$ We know that $\hat{\theta_3} =$ `r shrimpGroupMeans$mean[[1]] - 2 * shrimpGroupMeans$mean[[2]] + shrimpGroupMeans$mean[[3]]` and $\hat{\theta_4} =$ `r shrimpGroupMeans$mean[[4]] - 2 * shrimpGroupMeans$mean[[5]] + shrimpGroupMeans$mean[[6]]` so $\hat{\theta_6} = \hat{\theta_3} - \hat{\theta_4} =$ `r shrimpGroupMeans$mean[[1]] - 2 * shrimpGroupMeans$mean[[2]] + shrimpGroupMeans$mean[[3]]` - `r shrimpGroupMeans$mean[[4]] - 2 * shrimpGroupMeans$mean[[5]] + shrimpGroupMeans$mean[[6]]` = `r (shrimpGroupMeans$mean[[1]] - 2 * shrimpGroupMeans$mean[[2]] + shrimpGroupMeans$mean[[3]]) - (shrimpGroupMeans$mean[[4]] - 2 * shrimpGroupMeans$mean[[5]] + shrimpGroupMeans$mean[[6]])`
+
+## Part B
+
+Identify which estimates differ significantly from 0. Use the results to characterize the interaction between temperature and salinity.
+
+First we are going to make an ANOVA table of our full model to help get the MS(E) value that we will use to do statistically testing on our contrasts.
+```{r problem 3 anova}
+(anova_table3 <- anova(lm(y ~ (as.factor(a) + as.factor(b) + as.factor(c)) ^2 + as.factor(a):as.factor(b):as.factor(c), shrimp)))
+```
+
+From this table we can pull our MS(E) to be `r anova_table3$"Mean Sq"[[8]]`. We will use that value as we do our F-tests on our contrasts. Note $F = \frac{SS(\hat{\theta}) / (a-1)(c-1)}{MS(E)}$ on degrees of freedom (a-1)(c-1), abc(n-1). Now, $(a-1)(c-1) = (2-1)(3-1) = 1*2 = 2$ and $abc(n-1) = 2*2*3(3-1) = 12(2) = 24$. Plugging everything in our F-tests will consist of $F = \frac{SS(\hat{\theta}) / (a-1)(c-1)}{MS(E)} = \frac{SS(\hat{\theta}) / 2}{2903.778}$ on degrees of freedom 2, 24. For each $\hat{\theta_i}$ we are testing, we want the null hypothesis to be that $H_0: \theta_i = 0$ with the alternative hypothesis being that $H_A: \theta_i \neq 0$. Also note, we will be using a significance level of $\alpha = 0.05$ so we are comparing if our F-value we obtain is larger than the F-critical value of F(.05, 2, 24) = `r qf(0.05, 2, 24, lower.tail = F)`.
+
+- $\theta_1$: The only part we are missing from our F-test is the $SS(\hat{\theta_1})$. We can get that by saying that $SS(\hat{\theta_1}) = \frac{\hat{\theta_1}^2}{\sum_{i = 1}^3 \frac{c_i^2}{n_i}} = \frac{235.1667^2}{\frac{-1^2}{6} + \frac{0^2}{6} \frac{1^2}{6}} = \frac{55303.38}{\frac{1}{6} + \frac{1}{6}} = \frac{55303.38}{\frac{2}{6}} = 165910.1$. Now that we have $SS(\hat{\theta_1}) = 165910.1$ we will plug it into our F-value formula to do our test. Here we see that $F = \frac{SS(\hat{\theta}) / 2}{2903.778} = \frac{165910.1 / 2}{2903.778} \approx 28.568$. This value we obtain is much greater than our F-critical value of `r qf(0.05, 2, 24, lower.tail = F)` so $\theta_1$ differs significantly from 0.
+- $\theta_2$: The only part we are missing from our F-test is the $SS(\hat{\theta_2})$. We can get that by saying that $SS(\hat{\theta_2}) = \frac{\hat{\theta_2}^2}{\sum_{i = 1}^3 \frac{c_i^2}{n_i}} = \frac{-132.6667^2}{\frac{-1^2}{6} + \frac{0^2}{6} \frac{1^2}{6}} = \frac{17600.45}{\frac{1}{6} + \frac{1}{6}} = \frac{17600.45}{\frac{2}{6}} = 52801.35$. Now that we have $SS(\hat{\theta_2}) = 52801.35$ we will plug it into our F-value formula to do our test. Here we see that $F = \frac{SS(\hat{\theta_2}) / 2}{2903.778} = \frac{52801.35 / 2}{2903.778} \approx 9.092$. This value we obtain is much greater than our F-critical value of `r qf(0.05, 2, 24, lower.tail = F)` so $\theta_2$ differs significantly from 0.
+- $\theta_3$: The only part we are missing from our F-test is the $SS(\hat{\theta_3})$. We can get that by saying that $SS(\hat{\theta_3}) = \frac{\hat{\theta_3}^2}{\sum_{i = 1}^3 \frac{c_i^2}{n_i}} = \frac{-422.5^2}{\frac{1^2}{6} + \frac{2^2}{6} \frac{1^2}{6}} = \frac{178506.2}{\frac{1}{6} + \frac{4}{6} + \frac{1}{6}} = \frac{178506.2}{\frac{6}{6}} = 178506.2$. Now that we have $SS(\hat{\theta_3}) = 178506.2$ we will plug it into our F-value formula to do our test. Here we see that $F = \frac{SS(\hat{\theta_3}) / 2}{2903.778} = \frac{178506.2 / 2}{2903.778} \approx 30.737$. This value we obtain is much greater than our F-critical value of `r qf(0.05, 2, 24, lower.tail = F)` so $\theta_3$ differs significantly from 0.
+- $\theta_4$: The only part we are missing from our F-test is the $SS(\hat{\theta_4})$. We can get that by saying that $SS(\hat{\theta_4}) = \frac{\hat{\theta_4}^2}{\sum_{i = 1}^3 \frac{c_i^2}{n_i}} = \frac{20^2}{\frac{1^2}{6} + \frac{2^2}{6} \frac{1^2}{6}} = \frac{400}{\frac{1}{6} + \frac{4}{6} + \frac{1}{6}} = \frac{400}{\frac{6}{6}} = 400$. Now that we have $SS(\hat{\theta_2}) = 400$ we will plug it into our F-value formula to do our test. Here we see that $F = \frac{SS(\hat{\theta_4}) / 2}{2903.778} = \frac{400 / 2}{2903.778} \approx 0.06887579$. This value we obtain is much less than our F-critical value of `r qf(0.05, 2, 24, lower.tail = F)` so we **cannot** say with statistical evidence that $\theta_4$ differs significantly from 0.
+- $\theta_5$: The only part we are missing from our F-test is the $SS(\hat{\theta_5})$. We can get that by saying that $SS(\hat{\theta_5}) = \frac{\hat{\theta_5}^2}{\sum_{i = 1}^6 \frac{c_i^2}{n_i}} = \frac{367.8333^2}{\frac{-1^2}{6} + \frac{0^2}{6} \frac{1^2}{6} + \frac{1^2}{6} + \frac{0^2}{6} \frac{-1^2}{6}} = \frac{135301.3}{\frac{1}{6} + \frac{1}{6} + \frac{1}{6} + \frac{1}{6}} = \frac{135301.3}{\frac{4}{6}} = 202951.9$. Now that we have $SS(\hat{\theta_5}) = 202951.9$ we will plug it into our F-value formula to do our test. Here we see that $F = \frac{SS(\hat{\theta_5}) / 2}{2903.778} = \frac{202951.9 / 2}{2903.778} \approx 34.946$. This value we obtain is much greater than our F-critical value of `r qf(0.05, 2, 24, lower.tail = F)` so $\theta_5$ differs significantly from 0.
+- $\theta_6$: The only part we are missing from our F-test is the $SS(\hat{\theta_6})$. We can get that by saying that $SS(\hat{\theta_6}) = \frac{\hat{\theta_6}^2}{\sum_{i = 1}^6 \frac{c_i^2}{n_i}} = \frac{-442.5^2}{\frac{1^2}{6} + \frac{-2^2}{6} \frac{1^2}{6} + \frac{-1^2}{6} + \frac{2^2}{6} \frac{-1^2}{6}} = \frac{195806.2}{\frac{1}{6} + \frac{4}{6} + \frac{1}{6} + \frac{4}{6} + \frac{1}{6} + \frac{1}{6}} = \frac{195806.2}{\frac{12}{6}} = 97903.1$. Now that we have $SS(\hat{\theta_6}) = 97903.1$ we will plug it into our F-value formula to do our test. Here we see that $F = \frac{SS(\hat{\theta_6}) / 2}{2903.778} = \frac{97903.1 / 2}{2903.778} \approx 16.858$. This value we obtain is much greater than our F-critical value of `r qf(0.05, 2, 24, lower.tail = F)` so $\theta_6$ differs significantly from 0.
+
+In conclusion, $\theta_1, \theta_2, \theta_3, \theta_5, \theta_6$ all differ while significantly from 0 while $\theta_4$ does not. Since most of the contrasts show statistically significant evidence differing from 0 , we can say that interaction between temperature and salinity is present. We can also see in our ANOVA table in **Part A** that the interaction term between temperature and salinity was significant so this confirms our belief that interaction between these two variables remains present.
