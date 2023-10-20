@@ -201,11 +201,11 @@ As we can see from our ANOVA table, the p-value is `r anova(barleyModel)$"Pr(>F)
 
 If we wanted, we could have done this without the ANOVA function if we knew the MS(E) and the SS(Interaction). From the table, we could see that the $SS(Interaction) = 208.87$ and our $MS(E) = 52.22$. We also know that the interaction degrees of freedom is $(a-1)(b-1) = (5-1)(2-1) = 4*1 = 4$. We also know our error degrees of freedom is $a*b(n-1) = 5*2(3-1) = 10*2 = 20$. Now our F-value is $F = \frac{SS(interaction) / df1}{MS(E)} = \frac{208.87/4}{59.73} = 0.8742$ with degrees of freedom 4, 20. We can use the `pf()` function with inputs `pf(F-value, df1, df2, lower.tail=F)` = `pf(0.8742, 4, 20, lower.tail=F)` = `r pf(0.8742, 4, 20, lower.tail=F)` which rounds to the same p-value we got from our ANOVA table. Therefore our p-value is about `r round(pf(0.8742, 4, 20, lower.tail=F), 4)`.
 
-## Part C (**Double check with Module 3 Notes**)
+## Part C
 
 What does it mean for the effects of water and seed age to be plausibly additive?
 
-If we are saying the effects to be plausibly additive, we are saying that these effects of water and seed age do not interact and that each effect has an additive effect on the response variable which in this case is y (or the number of seeds that sprout).
+If we are saying the effects to be plausibly additive, we are saying that these effects of water and seed age do not interact and that each effect has an additive effect on the response variable which in this case is y (or the number of seeds that sprout). We know that additivity means that the effect of one independent variable(s) on the response variable does NOT depend on the value of another independent variable(s). So in this case the effect of seed age on the response variable (seeds sprouting) does not depend on the value of our other indpendent variable (water) and vice versa where the effect of water on the response variable (seeds sprouting) does not depend on the value of our other indpendent variable (seed age).
 
 ## Part D
 
@@ -246,9 +246,23 @@ As we can see our 95% confidence interval gives us a lower bound of `r confidenc
 
 Estimate the *linear* effect of seed age. Are older seeds more likely to sprout?
 
+We know that since our degrees of freedom for seed age is 4 we can have up to a 4-degree model (from linear, quadratic, cubic, and quartic). Also we know the contrast for the linear effect for seed age is $\hat{\theta_L} = -2\bar{y_{.1.}} - \bar{y_{.2.}} + 0\bar{y_{.3.}} + \bar{y_{.4.}} + 2\bar{y_{.5.}}$. Since we are analyzing a balanced design, we can get the following terms from **Part D**.
+
+- $\bar{y_{.1.}} = \frac{\bar{y_{11.}} + \bar{y_{21.}}}{2} =$ (`r barleyGroupMeans$mean[[1]]` + `r barleyGroupMeans$mean[[6]]`) / 2 = `r (barleyGroupMeans$mean[[1]] + barleyGroupMeans$mean[[6]]) / 2`
+- $\bar{y_{.2.}} = \frac{\bar{y_{12.}} + \bar{y_{22.}}}{2}=$ (`r barleyGroupMeans$mean[[2]]` + `r barleyGroupMeans$mean[[7]]`) / 2 = `r (barleyGroupMeans$mean[[2]] + barleyGroupMeans$mean[[7]]) / 2`
+- $\bar{y_{.3.}} = \frac{\bar{y_{13.}} + \bar{y_{23.}}}{2}=$ (`r barleyGroupMeans$mean[[3]]` + `r barleyGroupMeans$mean[[8]]`) / 2 = `r (barleyGroupMeans$mean[[3]] + barleyGroupMeans$mean[[8]]) / 2`
+- $\bar{y_{.4.}} = \frac{\bar{y_{14.}} + \bar{y_{24.}}}{2}=$ (`r barleyGroupMeans$mean[[4]]` + `r barleyGroupMeans$mean[[9]]`) / 2 = `r (barleyGroupMeans$mean[[4]] + barleyGroupMeans$mean[[9]]) / 2`
+- $\bar{y_{.5.}} = \frac{\bar{y_{15.}} + \bar{y_{25.}}}{2}=$ (`r barleyGroupMeans$mean[[5]]` + `r barleyGroupMeans$mean[[10]]`) / 2 = `r (barleyGroupMeans$mean[[5]] + barleyGroupMeans$mean[[10]]) / 2`
+
+Now we can plug those values into our formula to find the linear effect of seed age. This is $\hat{\theta_L} = -2\bar{y_{.1.}} - \bar{y_{.2.}} + 0\bar{y_{.3.}} + \bar{y_{.4.}} + 2\bar{y_{.5.}} =$ -2 x `r (barleyGroupMeans$mean[[1]] + barleyGroupMeans$mean[[6]]) / 2` - `r (barleyGroupMeans$mean[[2]] + barleyGroupMeans$mean[[7]]) / 2` + 0 x `r (barleyGroupMeans$mean[[3]] + barleyGroupMeans$mean[[8]]) / 2` + `r (barleyGroupMeans$mean[[4]] + barleyGroupMeans$mean[[9]]) / 2` + 2 x `r (barleyGroupMeans$mean[[5]] + barleyGroupMeans$mean[[10]]) / 2` = `r (-2*(barleyGroupMeans$mean[[1]] + barleyGroupMeans$mean[[6]]) / 2) - ((barleyGroupMeans$mean[[2]] + barleyGroupMeans$mean[[7]]) / 2) + ((barleyGroupMeans$mean[[4]] + barleyGroupMeans$mean[[9]]) / 2) + (2*(barleyGroupMeans$mean[[5]] + barleyGroupMeans$mean[[10]]) / 2)`. Therefore, the linear effect of seed age is `r (-2*(barleyGroupMeans$mean[[1]] + barleyGroupMeans$mean[[6]]) / 2) - ((barleyGroupMeans$mean[[2]] + barleyGroupMeans$mean[[7]]) / 2) + ((barleyGroupMeans$mean[[4]] + barleyGroupMeans$mean[[9]]) / 2) + (2*(barleyGroupMeans$mean[[5]] + barleyGroupMeans$mean[[10]]) / 2)`.
+
 ## Part F
 
 After averaging over to two levels of water, test for lack of fit of a model in which the effect of seed age on sprouting frequency is linear.
+
+Here we are going to do a lack of fit test. Again since the degrees of freedom for the seed age is 4 we can have up to a $4^{th}$ level polynomial model. We are going to do a lack of fit test where we see if the effect of seed age on sprouting frequency is plausibly linear. Our $H_0$: The effect of seed age on sprouting frequency is plausibly linear and $H_A$: The effect of seed age on sprouting frequency is NOT plausibly linear. 
+
+We are going to do this by saying that $F = \frac{(SS(Trt) - SS(\hat{\theta_L})) / t-1-p}{MS(E)}$ where t is the number of treatment levels, p is the reduced model's degree polynomial, and $SS(\hat{\theta_L}) = \frac{\hat{\theta_L}^2}{\sum_{i = 1}^{5} \frac{c_i^2}{n_i}}$. First we know that $t = 5$ for 5 levels of treatment for seed age. We also know $p = 1$ since in linear regression it only uses the one degree in the polynomial model. We found $SS(Trt) = 1321.13$ in our anova table in **Part B** and $MS(E) = 59.73$ also found in **Part B**. Lastly we know that $\hat{\theta_L} = 45.16667$ from **Part E** which we need to find $SS(\hat{\theta_L}) = \frac{\hat{\theta_L}^2}{\sum_{i = 1}^{5} \frac{c_i^2}{n_i}} = \frac{45.16667^2}{\frac{-2^2}{6} + \frac{-1^2}{6} + \frac{0^2}{6} + \frac{1^2}{6} + \frac{2^2}{6}} = \frac{2040.028}{\frac{4}{6} + \frac{1}{6} + \frac{0}{6} + \frac{1}{6} + \frac{4}{6}} = \frac{2040.028}{\frac{10}{6}} = 1224.017$. Now that we have everything we can find $F = \frac{(SS(Trt) - SS(\hat{\theta_L})) / t-1-p}{MS(E)} = \frac{(1321.13-1224.017) / 5-1-1}{59.73} = \frac{97.113 / 3}{59.73} = \frac{32.371}{59.73} = 0.54196$ on degrees of freedom $t-1-p, ab(n-1) = 5-1-1, 5*2(3-1) = 3, 20$. Now we want to compare our F-value of 0.54196 with 3, 20 degrees of freedom. We know that since our F-value < 1, it will be less than our critical value. Therefore, we fail to reject our $H_0$ and can say that the effect of seed age on sprouting frequency is plausibly linear.
 
 # Problem 3
 
