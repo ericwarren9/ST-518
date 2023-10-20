@@ -17,8 +17,7 @@ rmarkdown::render("~/ST-518/Warren_ST 518 HW 6.Rmd",
               output_options = list(
                 toc = TRUE, 
                 toc_depth = 3,
-                number_sections = TRUE,
-                df_print = "tibble"
+                number_sections = TRUE
                 )
               )
 ```
@@ -49,7 +48,7 @@ We can estimate the simple effect by only looking at the output for when $N = 45
 
 Estimate the difference in the simple effects of increasing copper across levels of Nitrogen.
 
-This is just finding the difference between **Part B** and **Part C**. For purposes of this problem, we will call this estimate $\hat{theta_3} = \hat{\theta_1} - \hat{\theta_2} = \bar{y_3} - \bar{y_1} - (\bar{y_4} - \bar{y_2}) = \bar{y_3} - \bar{y_1} - \bar{y_4} + \bar{y_2} = - 13 - (-3) = 16$. Therefore, this difference shown by $\hat{\theta_3} = 16$.
+This is just finding the difference between **Part B** and **Part C**. For purposes of this problem, we will call this estimate $\hat{\theta_3} = \hat{\theta_1} - \hat{\theta_2} = \bar{y_3} - \bar{y_1} - (\bar{y_4} - \bar{y_2}) = \bar{y_3} - \bar{y_1} - \bar{y_4} + \bar{y_2} = - 13 - (-3) = 16$. Therefore, this difference shown by $\hat{\theta_3} = 16$.
 
 ## Part E
 
@@ -77,7 +76,7 @@ First let us find the simple effect of increasing N when $Cu = 100$. We are goin
 
 Next we are going to report a standard error which is $\hat{SE}(\sum c_i\bar{y_{i.}}) = \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}}$. Now, we know this contrast is just $(0, 0, -1, 1)'$ because we said that $\hat{\theta_4} = \bar{y_4} - \bar{y_3}$. We also said in **Part E** that the $MS(E) = \frac{1}{4} * \sum_{i=1}^{4} s_i^2 = 36 + 16 + 58.6666667 + 57.3333333 = \frac{1}{4} * 168 = 42$. So we can say that $\hat{SE}(\sum c_i\bar{y_{i.}}) = \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}} = \sqrt{42 * (\frac{0^2}{4} + \frac{0^2}{4} + \frac{-1^2}{4} + \frac{1^2}{4})} = \sqrt{42 * (\frac{2}{4})} = \sqrt{21} =$ `r sqrt(21)`. So, $\hat{SE}(\sum c_i\bar{y_{i.}}) =$ `r sqrt(21)`. 
 
-Now we can get the confidence interval for these two effects, which is just saying $\hat{\theta_4} \pm t(\alpha / 2, N-t) * \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}}$ Now we know that $\hat{\theta_4} = 19$, $\alpha = 0.05$ since it is a 95% confidence interval, $N-t = ab(n-1) = 2*2(4-1) 4*3 = 12$, and $\sqrt{MS(E) * \sum \frac{c_i^2}{n_i}} = \hat{SE}(\sum c_i\bar{y_{i.}}) = \sqrt{21}$. Therefore, $\hat{\theta_4} \pm t(\alpha / 2, N-t) * \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}} = -19 \pm t(0.05/2, 12) * \sqrt{21} = -19 \pm t(0.025, 12) * \sqrt{21}$. So our 95% confidence interval is ($-19 - t(0.025, 12) * \sqrt{21}, -19 + t(0.025, 12) * \sqrt{21}$). Now $t(0.025, 12) =$ `qt(0.025, 12, lower.tail = F)` = `r qt(0.025, 12, lower.tail = F)`. Therefore our confidence interval when plugging the t-value of $t(0.025, 12)$ into it which was ($-19 - t(0.025, 12) * \sqrt{21}, -19 + t(0.025, 12) * \sqrt{21}$) is (`r -19 - qt(0.025, 12, lower.tail = F) * sqrt(21)`, `r -19 + qt(0.025, 12, lower.tail = F) * sqrt(21)`).
+Now we can get the confidence interval for these two effects, which is just saying $\hat{\theta_4} \pm t(\alpha / 2, N-t) * \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}}$ Now we know that $\hat{\theta_4} = -19$, $\alpha = 0.05$ since it is a 95% confidence interval, $N-t = ab(n-1) = 2*2(4-1) 4*3 = 12$, and $\sqrt{MS(E) * \sum \frac{c_i^2}{n_i}} = \hat{SE}(\sum c_i\bar{y_{i.}}) = \sqrt{21}$. Therefore, $\hat{\theta_4} \pm t(\alpha / 2, N-t) * \sqrt{MS(E) * \sum \frac{c_i^2}{n_i}} = -19 \pm t(0.05/2, 12) * \sqrt{21} = -19 \pm t(0.025, 12) * \sqrt{21}$. So our 95% confidence interval is ($-19 - t(0.025, 12) * \sqrt{21}, -19 + t(0.025, 12) * \sqrt{21}$). Now $t(0.025, 12) =$ `qt(0.025, 12, lower.tail = F)` = `r qt(0.025, 12, lower.tail = F)`. Therefore our confidence interval when plugging the t-value of $t(0.025, 12)$ into it which was ($-19 - t(0.025, 12) * \sqrt{21}, -19 + t(0.025, 12) * \sqrt{21}$) is (`r -19 - qt(0.025, 12, lower.tail = F) * sqrt(21)`, `r -19 + qt(0.025, 12, lower.tail = F) * sqrt(21)`).
 
 Lastly, since we can see that 0 is not contained in our 95% confidence interval we have statistically significant evidence to conclude (or declare) that the observed effect is “significant” at level of significance of $\alpha = .05$.
 
@@ -93,7 +92,7 @@ Now we are going to get a F-ratio for an F-test for a test of no effect. We know
 
 Given the analysis you’ve done so far, is it appropriate to say the the observed effect of copper in this experiment is not significant (using level $\alpha = .05$)? Explain.
 
-From **Part I** we showed the F-ratio we are using to do this test is $F =$ `r 100/42` with 1, 12 degrees of freedom. To compare this to our F-critical value, we can get the F-critical value for a significance level of 0.05 by using the `qf()` function and inputting `qt(alpha, df1, df2, lower.tail = F)` which in this case is `qf(0.05, 1, 12, lower.tail = F)` which gives us the corresponding F-critical value of `r qf(0.05, 1, 12, lower.tail = F)`. Since this F-critical value is larger than the F-value we calculated from our test in **Part I** we fail to reject the null hypothesis that there is no effect of increasing copper. Therefore it is appropriate to say the the observed effect of copper in this experiment is not significant. 
+From **Part I** we showed the F-ratio we are using to do this test is $F =$ `r 100/42` with 1, 12 degrees of freedom. To compare this to our F-critical value, we can get the F-critical value for a significance level of 0.05 by using the `qf()` function and inputting `qf(alpha, df1, df2, lower.tail = F)` which in this case is `qf(0.05, 1, 12, lower.tail = F)` which gives us the corresponding F-critical value of `r qf(0.05, 1, 12, lower.tail = F)`. Since this F-critical value is larger than the F-value we calculated from our test in **Part I** we fail to reject the null hypothesis that there is no effect of increasing copper. Therefore it is appropriate to say the the observed effect of copper in this experiment is not significant. 
 
 ## Part K
 
@@ -310,10 +309,10 @@ Identify which estimates differ significantly from 0. Use the results to charact
 
 First we are going to make an ANOVA table of our full model to help get the MS(E) value that we will use to do statistically testing on our contrasts.
 ```{r problem 3 anova}
-(anova_table3 <- anova(lm(y ~ (as.factor(a) + as.factor(b) + as.factor(c)) ^2 + as.factor(a):as.factor(b):as.factor(c), shrimp)))
+(anova_table3 <- anova(lm(y ~ factor(a)*factor(b)*factor(c), shrimp)))
 ```
 
-From this table we can pull our MS(E) to be `r anova_table3$"Mean Sq"[[8]]`. We will use that value as we do our F-tests on our contrasts. Note $F = \frac{SS(\hat{\theta}) / (a-1)(c-1)}{MS(E)}$ on degrees of freedom (a-1)(c-1), abc(n-1). Now, $(a-1)(c-1) = (2-1)(3-1) = 1*2 = 2$ and $abc(n-1) = 2*2*3(3-1) = 12(2) = 24$. Plugging everything in our F-tests will consist of $F = \frac{SS(\hat{\theta}) / (a-1)(c-1)}{MS(E)} = \frac{SS(\hat{\theta}) / 2}{2903.778}$ on degrees of freedom 2, 24. For each $\hat{\theta_i}$ we are testing, we want the null hypothesis to be that $H_0: \theta_i = 0$ with the alternative hypothesis being that $H_A: \theta_i \neq 0$. Also note, we will be using a significance level of $\alpha = 0.05$ so we are comparing if our F-value we obtain is larger than the F-critical value of F(.05, 2, 24) = `r qf(0.05, 2, 24, lower.tail = F)`.
+From this table we can pull our MS(E) to be `r anova_table3$"Mean Sq"[[8]]`. We will use that value as we do our F-tests on our contrasts. Note $F = \frac{SS(\hat{\theta_i}) / (a-1)(c-1)}{MS(E)}$ on degrees of freedom (a-1)(c-1), abc(n-1). Now, $(a-1)(c-1) = (2-1)(3-1) = 1*2 = 2$ and $abc(n-1) = 2*2*3(3-1) = 12(2) = 24$. Plugging everything in our F-tests will consist of $F = \frac{SS(\hat{\theta_i}) / (a-1)(c-1)}{MS(E)} = \frac{SS(\hat{\theta_i}) / 2}{2903.778}$ on degrees of freedom 2, 24. For each $\theta_i$ we are testing, we want the null hypothesis to be that $H_0: \theta_i = 0$ with the alternative hypothesis being that $H_A: \theta_i \neq 0$. Also note, we will be using a significance level of $\alpha = 0.05$ so we are comparing if our F-value we obtain is larger than the F-critical value of F(.05, 2, 24) = `r qf(0.05, 2, 24, lower.tail = F)`.
 
 - $\theta_1$: The only part we are missing from our F-test is the $SS(\hat{\theta_1})$. We can get that by saying that $SS(\hat{\theta_1}) = \frac{\hat{\theta_1}^2}{\sum_{i = 1}^3 \frac{c_i^2}{n_i}} = \frac{235.1667^2}{\frac{-1^2}{6} + \frac{0^2}{6} \frac{1^2}{6}} = \frac{55303.38}{\frac{1}{6} + \frac{1}{6}} = \frac{55303.38}{\frac{2}{6}} = 165910.1$. Now that we have $SS(\hat{\theta_1}) = 165910.1$ we will plug it into our F-value formula to do our test. Here we see that $F = \frac{SS(\hat{\theta}) / 2}{2903.778} = \frac{165910.1 / 2}{2903.778} \approx 28.568$. This value we obtain is much greater than our F-critical value of `r qf(0.05, 2, 24, lower.tail = F)` so $\theta_1$ differs significantly from 0.
 - $\theta_2$: The only part we are missing from our F-test is the $SS(\hat{\theta_2})$. We can get that by saying that $SS(\hat{\theta_2}) = \frac{\hat{\theta_2}^2}{\sum_{i = 1}^3 \frac{c_i^2}{n_i}} = \frac{-132.6667^2}{\frac{-1^2}{6} + \frac{0^2}{6} \frac{1^2}{6}} = \frac{17600.45}{\frac{1}{6} + \frac{1}{6}} = \frac{17600.45}{\frac{2}{6}} = 52801.35$. Now that we have $SS(\hat{\theta_2}) = 52801.35$ we will plug it into our F-value formula to do our test. Here we see that $F = \frac{SS(\hat{\theta_2}) / 2}{2903.778} = \frac{52801.35 / 2}{2903.778} \approx 9.092$. This value we obtain is much greater than our F-critical value of `r qf(0.05, 2, 24, lower.tail = F)` so $\theta_2$ differs significantly from 0.
