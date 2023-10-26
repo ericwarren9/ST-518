@@ -1,5 +1,5 @@
 ---
-title: "ST 518 Homework 6"
+title: "ST 518 Homework 7"
 author: "Eric Warren"
 date: "October 28, 2023"
 urlcolor: blue
@@ -191,9 +191,17 @@ We can see the average mpg for each gas blend with gas blend **B** having the hi
 
 For each of several species, an Ecology researcher ran an exposure assay in which groups of $n = 50$ ants are measured for mortality after exposure to one of three different bacteria. For each species, ants are randomized to the three bacteria treatments within each of 15 colonies. That is, a randomized complete block design is used for each species, with colonies serving as complete blocks. Find the results for the DB species on moodle as **“DBdat.mtx”**.
 
+Here we are going to read in the data.
+```{r problem 3 read in data}
+(
+  db <- read_csv("DBdat.mtx", skip = 1) %>%
+    mutate(Colony = as.factor(Colony))
+)
+```
+
 ## Part A
 
-Watch the video on the `hiddenf` package. What is the name of the function in R that will create a directory system containing all of the help files that a developer can complete to create documentation for a package? `______skeleton`.
+Watch the video on the `hiddenf` package. What is the name of the function in R that will create a directory system containing all of the help files that a developer can complete to create documentation for a package? `____-skeleton`.
 
 The function is called `package.skeleton`.
 
@@ -201,7 +209,45 @@ The function is called `package.skeleton`.
 
 Obtain an interaction plot with proportion of ants dying out of $n = 50$ on the vertical axis, bacteria treatment on the horizontal axis and lines connecting mortality rates from the same colony.
 
+Here we are going to make an interaction plot as described above. We need to pivot our data to a longer format do make this work. We will do this first.
+```{r pivot longer db data}
+(
+  db_longer <- db %>%
+    pivot_longer(cols = Control:E.coli, 
+                 names_to = "bacteria", 
+                 values_to = "rates")
+)
+```
 
+Now we are going to make the interaction plot as described in the directions.
+```{r problem 3 interaction plot 1}
+db_longer %>%
+  ggplot(aes(x = bacteria, y = rates)) + 
+  geom_point(aes(color = Colony)) + 
+  geom_line(aes(group = Colony, color = Colony)) +
+  labs(x = "Bacteria Type",
+       y = "Proportion of Ants Dying",
+       color = "Colony",
+       title = "What Proportion of Ants are Dying by Which Bacteria",
+       caption = "Eric Warren") +
+  theme_bw()
+```
+
+It seems that **E.coli** has a spike in the proportion of ants dying in each colony.
+
+## Part C
+
+Either by using the `hiddenf` package in R, or by assigning colonies to groups, obtain an ANOVA table with the following sources of variability: treatments, groups, group-by-treatment interaction, colony within group.
+
+
+
+## Part D
+
+Obtain the p-value for the test of group-by-treatment interaction after and report it after multiplying by $2^{15-1} - 1$. Is there evidence that the resistance to bacteria varies across colonies?
+
+## Part E
+
+Obtain another plot of survival versus bacteria with different lines for colonies. Color the colony lines according to group.
 
 # Problem 4
 
@@ -217,10 +263,138 @@ measured for each of the 16 bags. (Bags serve as the experimental units.) Let $z
 
 First we will read in the data to make sure we can do our analysis later.
 ```{r problem 4 read in}
-(oysters <- read_table("oysters.dat"))
+(oysters <- read_table("oysters.dat") %>%
+   mutate(trt = as.factor(trt)))
 ```
 
 ## Part A
 
 Obtain the F-ratio for a test of equal final weights in a one-way ANOVA where initial weight $z$ is ignored.
 
+If we ignore the initial weight then we are only fitting a model with `final` being our response variable and `trt` being our only predictor. Thus, we can make the model below with the appropriate anova table
+```{r anova ignore z}
+# Make the model
+ignore_z_model <- lm(final ~ trt, oysters)
+
+# Show anova table
+(anova_ignore_z <- anova(ignore_z_model))
+```
+
+As we can see in our one way anova table, we can that the F-value for our test of equal weights is `r anova_ignore_z$"F value"[[1]]` with a degrees of freedom of `r anova_ignore_z$"Df"[[1]]`, `r anova_ignore_z$"Df"[[2]]`. This gets us a corresponding p-value of `r anova_ignore_z$"Pr(>F)"[[1]]`, which gives us a conclusion that we do not have statistically significant evidence to say that the final weights of each treatment are different. Therefore, we can say that the final weights of each bag are plausibly the same.
+
+To answer the question, we found the F-ratio is `r anova_ignore_z$"F value"[[1]]` with a degrees of freedom of `r anova_ignore_z$"Df"[[1]]`, `r anova_ignore_z$"Df"[[2]]`.
+
+## Part B
+
+Obtain the F-ratio for a test of equal final weights in a one-way ANOVA after controlling for initial weight $z$.
+
+Here when controlling for the initial weight we are looking at two models to compare our anova table on. The first model is the full model of $Y_i = \beta_0 + \beta_1x_{1i} + \beta_2x_{2i} + \beta_3x_{3i} + \beta_zx_i$ and the reduced model we are comparing to is $Y_i = \beta_0 + \beta_zx_i$. We can do this test below where our $H_0: \beta_1 = \beta_2 = \beta3 = 0$ and $H_A: \geq 1 \beta_i \neq 0$. We are going to do this test in our code chunk below.
+```{r control z test}
+full_model <- lm(final ~ trt + z, oysters)
+reduced_model <- lm(final ~ z, oysters)
+
+(control_z_anova <- anova(reduced_model, full_model))
+```
+
+As we can see in our one way anova table, we can that the F-value for our test of equal weights after controlling for initial weight $z$ is `r control_z_anova$"F"[[1]]` with a degrees of freedom of `r control_z_anova$"Df"[[2]]`, `r control_z_anova$"Res.Df"[[2]]`. This gets us a corresponding p-value of `r control_z_anova$"Pr(>F)"[[2]]`, which gives us a conclusion that we have statistically significant evidence to say that the final weights of each treatment are different after controlling for initial weight $z$.
+
+To answer the question, we found the F-ratio is is `r control_z_anova$"F"[[1]]` with a degrees of freedom of `r control_z_anova$"Df"[[2]]`, `r control_z_anova$"Res.Df"[[2]]`.
+
+## Part C
+
+Use the output to report the unadjusted means for treatments 1 and 4. (Use the 2nd column in the table below.)
+
+|Treatment | Unadjusted Mean | Adjusted Mean | Standard Error |
+|:----|:-----:|:-----:|:-----:|-----:|
+|1 | | | |
+|4 | | | |
+
+We can get the unadjusted means by taking the average of each treatment's response (which comes from the column `final`). We are going to take the means of each treatment below.
+```{r oyster unadjusted mean}
+(
+  oyster_unadjusted_means <- oysters %>%
+    group_by(trt) %>%
+    summarize(avg = mean(final))
+)
+```
+
+Here we can see that the unadjusted average for treatment 1 is `r oyster_unadjusted_means$avg[[1]]` and the unadjusted average for treatment 4 is `r oyster_unadjusted_means$avg[[4]]`. Now our chart looks like this:
+
+|Treatment | Unadjusted Mean | Adjusted Mean | Standard Error |
+|:----|:-----:|:-----:|:-----:|-----:|
+|1 | `r oyster_unadjusted_means$avg[[1]]`| | |
+|4 | `r oyster_unadjusted_means$avg[[4]]`| | |
+
+Note this matches the output we are given in the homework problem, but it is good to know the steps if we had to code this ourselves from scratch.
+
+## Part D
+
+For bag i, let $x_{i1}, ... , x_{i4}$ denote indicator variables for treatments 1-4, respectively. Consider the analysis of covariance model: $Y_i = \beta_0 + \beta_1x_{1i} + \beta_2x_{2i} + \beta_3x_{3i} + \beta_4x_{4i} + \beta_zx_i + E_i$
+
+### Part i
+
+Use the fitted model to report the mean final weight, after adjustment to the average initial weight $\bar{x}$, for treatments 1 and 4. Fill in the table above, show any work below.
+
+Now remember our table from **Part C** which is below:
+
+|Treatment | Unadjusted Mean | Adjusted Mean | Standard Error |
+|:----|:-----:|:-----:|:-----:|-----:|
+|1 | `r oyster_unadjusted_means$avg[[1]]`| | |
+|4 | `r oyster_unadjusted_means$avg[[4]]`| | |
+
+We are now going to find the adjusted means for the treatments. Here we are going to group the treatments and find the mean of the `z` variable. We do this below.
+```{r z averages}
+(
+  z_averages <- oysters %>%
+    group_by(trt) %>%
+    summarize(avg = mean(z))
+)
+```
+
+Note this matches the output we are given in the homework problem, but it is good to know the steps if we had to code this ourselves from scratch.
+
+Now we are going to find the $\bar{z}$ or the average of the covariates. In this case we know that $\bar{z} = \frac{\bar{z_1} + \bar{z_2} + \bar{z_3} + \bar{z_4}}{4} =$ (`r z_averages$avg[[1]]` + `r z_averages$avg[[2]]` + `r z_averages$avg[[3]]` + `r z_averages$avg[[4]]`) / 4 = `r (z_averages$avg[[1]] + z_averages$avg[[2]] + z_averages$avg[[3]] + z_averages$avg[[4]]) / 4`. Therefore, we can use this by saying that $\bar{z} =$ `r (z_averages$avg[[1]] + z_averages$avg[[2]] + z_averages$avg[[3]] + z_averages$avg[[4]]) / 4`. This value makes sense since $z$ is found by subtracting from a mean of another value by the original value so we should get the mean minus the mean (on average) which gives the value of `r (z_averages$avg[[1]] + z_averages$avg[[2]] + z_averages$avg[[3]] + z_averages$avg[[4]]) / 4`. Again for practice, it is good to know the math behind it for in the future when this is not the case.
+
+Now we can find the adjusted means for treatments 1 and 4 below using the formula to find the adjusted mean of treatment $i$ of $\bar{y_{i, a}} = \hat{\beta_0} + \hat{\beta_i} + \hat{\beta_z} * \bar{z}$. Note to get the exact values to match up with the correct answers we are going to use the SAS output on the last page of the homework to get the "correct" values for each $\beta_i$. We are first going to list what SAS has for each $\beta_i$ value which is slightly different that how I have found it in R. 
+
+- $\beta_0 = 32.82685402$
+- $\beta_1 =  -1.23028630$
+- $\beta_2 =  -1.36002698$
+- $\beta_3 = 0.48289720$
+- $\beta_4 = 0$
+- $\beta_z =  1.04670265$
+
+We can plug this formula $\bar{y_{i, a}} = \hat{\beta_0} + \hat{\beta_i} + \hat{\beta_z} \bar{z}$ in below with our respective treatments to find:
+
+- Treatment 1: $\bar{y_{1, a}} = \hat{\beta_0} + \hat{\beta_1} + \hat{\beta_z}* \bar{z} = 32.82685402 + (-1.23028630) + 1.04670265$ x `r (z_averages$avg[[1]] + z_averages$avg[[2]] + z_averages$avg[[3]] + z_averages$avg[[4]]) / 4` = `r 32.82685402 - 1.23028630 + (1.04670265 * ((z_averages$avg[[1]] + z_averages$avg[[2]] + z_averages$avg[[3]] + z_averages$avg[[4]]) / 4))`
+- Treatment 4: $\bar{y_{4, a}} = \hat{\beta_0} + \hat{\beta_4} + \hat{\beta_z} \bar{z} = 32.82685402 + 0 + 1.04670265$ x `r (z_averages$avg[[1]] + z_averages$avg[[2]] + z_averages$avg[[3]] + z_averages$avg[[4]]) / 4` = `r 32.82685402 + 0 + (1.04670265 * ((z_averages$avg[[1]] + z_averages$avg[[2]] + z_averages$avg[[3]] + z_averages$avg[[4]]) / 4))`. This makes sense that this value is just the `intercept` value we get in our output since our output is done with the parameter estimates corresponding to the parameterization with treatment 4 set to 0.
+
+Now we can update our table with the following values by plugging in our adjusted means.
+
+|Treatment | Unadjusted Mean | Adjusted Mean | Standard Error |
+|:----|:-----:|:-----:|:-----:|-----:|
+|1 | `r oyster_unadjusted_means$avg[[1]]`| `r 32.82685402 - 1.23028630 + (1.04670265 * ((z_averages$avg[[1]] + z_averages$avg[[2]] + z_averages$avg[[3]] + z_averages$avg[[4]]) / 4))`| |
+|4 | `r oyster_unadjusted_means$avg[[4]]`| `r 32.82685402 + 0 + (1.04670265 * ((z_averages$avg[[1]] + z_averages$avg[[2]] + z_averages$avg[[3]] + z_averages$avg[[4]]) / 4))`| |
+
+### Part ii
+
+Report the standard error for the adjusted means for locations 1 and 4. (Fill in the table, writing “NP” if it is not possible to give a number based on the provided output.)
+
+The formula to find the standard error is $\hat{SE} = \sqrt{c' (X'X)^{-1} c MS(E)}$. Given we do not have $(X'X)^{-1}$ from the output, this would make it very difficult to solve. The good news is that we can do this in SAS and get these estimates. I have attached images of the code and output below.
+
+![](HW7-P4-Code.png)
+
+![](HW7-P4-Output.png)
+
+As we can see the standard error for treatment 1 is 0.3201005 and the standard error for treatment 4 is 0.2839864 (which seems to match the intercept standard error). We can now fill out our table completely. 
+
+|Treatment | Unadjusted Mean | Adjusted Mean | Standard Error |
+|:----|:-----:|:-----:|:-----:|-----:|
+|1 | `r oyster_unadjusted_means$avg[[1]]`| `r 32.82685402 - 1.23028630 + (1.04670265 * ((z_averages$avg[[1]] + z_averages$avg[[2]] + z_averages$avg[[3]] + z_averages$avg[[4]]) / 4))`| 0.3201005|
+|4 | `r oyster_unadjusted_means$avg[[4]]`| `r 32.82685402 + 0 + (1.04670265 * ((z_averages$avg[[1]] + z_averages$avg[[2]] + z_averages$avg[[3]] + z_averages$avg[[4]]) / 4))`| 0.2839864|
+
+## Part E
+
+Consider the difference between mean final weights under treatments 1 and 4. Estimate this difference after controlling for initial weight. Report a standard error and a p-value for a test of no difference.
+
+So when we want to look at the mean final weights under treatments 1 and 4 after controlling for initial weight, we are just looking at our adjusted mean values. Since we are parameterizing on treatment 4, as described before, this esimated difference between the two treatments is just $\hat{\beta_1} = -1.23028630$ since $\hat{\beta_1} =$ adjusted mean from treatment 1 - adjusted mean from treatment 4. To continue our standard error is just the $SE(\hat{\beta_1}) = 0.43892225$. Now our hypothesis test to see if there is any difference between the two treatments' adjusted means is just testing with $H_0: \beta_1 = 0$ and $H_A: \beta_1 \neq 0$. The good news is that our output gives us a t-value of 2.80 (could also be solved by doing $(1.23028630 - 0)/0.43892225$) with 11 degrees of freedom (from the error degrees of freedom in our output) and this gives us a two sided test p-value of about 0.0172, which can be found from output or by doing `2 * pt((1.23028630 - 0)/0.43892225, 11, lower.tail = F)` in R. This test would tell us that there is a statistically significant difference in mean final weights under treatments 1 and 4 after controlling for initial weight.
