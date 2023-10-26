@@ -239,15 +239,71 @@ It seems that **E.coli** has a spike in the proportion of ants dying in each col
 
 Either by using the `hiddenf` package in R, or by assigning colonies to groups, obtain an ANOVA table with the following sources of variability: treatments, groups, group-by-treatment interaction, colony within group.
 
+We are going to use the `hiddenf` package in R to help us get this anova table. We need to make sure our data is a matrix as this package only takes from those values. We also need to make sure the matrix does not include any of our factor variables (for example we need to make sure `colony` is not included in the package). We are going to do this below. Eventually when our data is the correct form we can get our ANOVA table.
+```{r hidden f anova}
+library(hiddenf)
 
+# Make data into matrix with only bacteria columns
+db_mtx <- as.matrix(db[ , 2:4])
+
+# Now put it in the hiddenf format
+db_hiddenf <- HiddenF(db_mtx)
+
+# Get anova table
+anova(db_hiddenf)
+```
+
+This anova table matches up with SAS's table by doing the `PROC GLM` in its platform. I have attached a chunk of code and the output below.
+
+![](HW7_Code_Anova_HiddenF_SAS.png)
+
+![](HW7_Hidden_F_Anova_SAS.png)
+
+Note for purpose of comparing R to SAS output the following terms match up:
+
+- `group` (in R) with `group` (in SAS)
+- `col` (in R) with `treatment` (in SAS)
+- `row` (in R) with `colony(group)` (in SAS)
+- `group:col` (in R) with `treatment*group` (in SAS)
+
+After finding those matching values we can see a consistent anova table between both platforms and use these values we found with the `hiddenf` package.
 
 ## Part D
 
 Obtain the p-value for the test of group-by-treatment interaction after and report it after multiplying by $2^{15-1} - 1$. Is there evidence that the resistance to bacteria varies across colonies?
 
+There are multiple ways we can do this. The first is using the `hiddenf` package anova table p-value and multiply by $2^{15-1} - 1$ to get the real p-value. In this case, I can get 0.0000000902458525 as our p-value from our table and then multiplying it by $2^{15-1} - 1$ gets `r 0.0000000902458525 * (2**14 - 1)`.
+
+The second option is to use the summary function with our `hiddenf` object.
+```{r get hiddenf pvalue}
+summary(db_hiddenf)
+```
+
+We see that our minimum adjusted p-value is 0.001478498 from this output.
+
+The third method is using the SAS anova table to get the F-value for the interaction term being 32.27 with degrees of freedom 2, 26 (this is found as our error degrees of freedom which is just the total observations -- $45$ -- minus the degrees of freedom from the other terms added up -- $1+2+13+2 = 18$ minus one more additional degree of freedom). So we can get our error degrees of freedom of $45-18-1 = 26$. Anyways, we can get the p-value of a F-value of 32.27 with degrees of freedom 2, 26 using the `pf(F-value, df1, df2, lower.tail = F)` to get `pf(32.27, 2, 26, lower.tail = F)` or a corresponding p-value of `r pf(32.27, 2, 26, lower.tail = F)`. Now we can multiply this by $2^{15-1} - 1$  to get a real p-value which is `r pf(32.27, 2, 26, lower.tail = F) * (2**14 - 1)` which is also roughly the same p-value.
+
+If we had a test of significance that was $\alpha = .05$ as most are, since our p-value has been shown to be less than that we can say that there is statistically significant evidence to say that the resistance to bacteria varies across colonies.
+
 ## Part E
 
 Obtain another plot of survival versus bacteria with different lines for colonies. Color the colony lines according to group.
+
+Now we are going to make the survival plot as described in the directions. Note we are given the mortality rates and the survival rates are $1 - mortality$. Thus, we are going to make our value for graphing being `1 - rates` in our code and use the tall formatted data frame we made before which is `db_longer`.
+```{r problem 3 survival plot 1}
+db_longer %>%
+  ggplot(aes(x = bacteria, y = 1 - rates)) + 
+  geom_point(aes(color = Colony)) + 
+  geom_line(aes(group = Colony, color = Colony)) +
+  labs(x = "Bacteria Type",
+       y = "Proportion of Ants Surviving",
+       color = "Colony",
+       title = "What Proportion of Ants are Surviving to Exposure of Different Bacteria",
+       caption = "Eric Warren") +
+  theme_bw()
+```
+
+Again we can see that it seems there is a proportion of less ants are surviving (or a proportion of more ants are dying) when exposed to E.coli than the other two bacterias.
 
 # Problem 4
 
@@ -386,7 +442,12 @@ The formula to find the standard error is $\hat{SE} = \sqrt{c' (X'X)^{-1} c MS(E
 
 ![](HW7-P4-Output.png)
 
-As we can see the standard error for treatment 1 is 0.3201005 and the standard error for treatment 4 is 0.2839864 (which seems to match the intercept standard error). We can now fill out our table completely. 
+We can also do this in R by using the `emmeans::emmeans()` function. We will show this below.
+```{r problem 4 emmeans}
+(problem4_adjusted_means_se <- emmeans::emmeans(full_model, ~trt))
+```
+
+This output matches what we found in SAS so we should be very confident we found the stanard errors. Also not the adjusted means also match from what we got before. As we can see the standard error for treatment 1 is 0.3201005 and the standard error for treatment 4 is 0.2839864 (which also seems to match the intercept standard error from the output). We can now fill out our table completely. 
 
 |Treatment | Unadjusted Mean | Adjusted Mean | Standard Error |
 |:----|:-----:|:-----:|:-----:|-----:|
@@ -398,3 +459,5 @@ As we can see the standard error for treatment 1 is 0.3201005 and the standard e
 Consider the difference between mean final weights under treatments 1 and 4. Estimate this difference after controlling for initial weight. Report a standard error and a p-value for a test of no difference.
 
 So when we want to look at the mean final weights under treatments 1 and 4 after controlling for initial weight, we are just looking at our adjusted mean values. Since we are parameterizing on treatment 4, as described before, this esimated difference between the two treatments is just $\hat{\beta_1} = -1.23028630$ since $\hat{\beta_1} =$ adjusted mean from treatment 1 - adjusted mean from treatment 4. To continue our standard error is just the $SE(\hat{\beta_1}) = 0.43892225$. Now our hypothesis test to see if there is any difference between the two treatments' adjusted means is just testing with $H_0: \beta_1 = 0$ and $H_A: \beta_1 \neq 0$. The good news is that our output gives us a t-value of 2.80 (could also be solved by doing $(1.23028630 - 0)/0.43892225$) with 11 degrees of freedom (from the error degrees of freedom in our output) and this gives us a two sided test p-value of about 0.0172, which can be found from output or by doing `2 * pt((1.23028630 - 0)/0.43892225, 11, lower.tail = F)` in R. This test would tell us that there is a statistically significant difference in mean final weights under treatments 1 and 4 after controlling for initial weight.
+
+So in conclusion we found the estimated difference to be $\hat{\beta_1} = -1.23028630$, the standard error to be $SE(\hat{\beta_1}) = 0.43892225$, and the corresponding p-value to be about 0.0172.
