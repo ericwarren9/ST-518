@@ -436,7 +436,9 @@ Now we can update our table with the following values by plugging in our adjuste
 
 Report the standard error for the adjusted means for locations 1 and 4. (Fill in the table, writing “NP” if it is not possible to give a number based on the provided output.)
 
-The formula to find the standard error is $\hat{SE} = \sqrt{c' (X'X)^{-1} c MS(E)}$. Given we do not have $(X'X)^{-1}$ from the output, this would make it very difficult to solve. The good news is that we can do this in SAS and get these estimates. I have attached images of the code and output below.
+The formula to find the standard error is $\hat{SE} = \sqrt{c' (X'X)^{-1} c MS(E)}$. Given we do not have $(X'X)^{-1}$ from the output, this would make it very difficult to solve for both. Since the covariate $z$ is centered we know that the standard error for treatment 4 is just the standard error of the intercept in our output which is 0.28398639 (since our estimates are based on everything being relational to treatment 4).  Since we do not have $(X'X)^{-1}$ from the output, we are not able to calculate the standard error for treatment 1. But what if we wanted to still get that estimate?
+
+The good news is that we can do this in SAS and get these estimates. I have attached images of the code and output below.
 
 ![](HW7-P4-Code.png)
 
@@ -447,7 +449,7 @@ We can also do this in R by using the `emmeans::emmeans()` function. We will sho
 (problem4_adjusted_means_se <- emmeans::emmeans(full_model, ~trt))
 ```
 
-This output matches what we found in SAS so we should be very confident we found the stanard errors. Also not the adjusted means also match from what we got before. As we can see the standard error for treatment 1 is 0.3201005 and the standard error for treatment 4 is 0.2839864 (which also seems to match the intercept standard error from the output). We can now fill out our table completely. 
+This output matches what we found in SAS so we should be very confident we found the stanard errors. Also not the adjusted means also match from what we got before. As we can see the standard error for treatment 1 is 0.3201005 and the standard error for treatment 4 is 0.2839864 (which matches the intercept standard error from the output). We can now fill out our table completely. 
 
 |Treatment | Unadjusted Mean | Adjusted Mean | Standard Error |
 |:----|:-----:|:-----:|:-----:|-----:|
