@@ -1,0 +1,41 @@
+---
+title: "ST 518 Homework 8"
+author: "Eric Warren"
+date: "November 4, 2023"
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+options(scipen = 999)
+```
+
+```{r output setup, eval=FALSE, echo=FALSE}
+# This code allows us to render a pdf document
+rmarkdown::render("~/ST-518/Warren_ST 518 HW 8.Rmd", 
+              output_format = "pdf_document", 
+              output_options = list(
+                toc = TRUE, 
+                toc_depth = 3,
+                number_sections = TRUE
+                )
+              )
+```
+
+# Problem 1
+
+An experiment randomizes seeds from `t = 10` plants from an F2 generation of soybeans to `N = 30` homogeneous plots. The percentage protein content is measured in the seds from the plants produced in each plot with results below and in the file **“protein-content.dat”**.
+
+First we are going to read in the data.
+```{r read in problem 1 data}
+library(tidyverse)
+(protein <- read_table("protein-content.dat"))
+```
+
+Consider a random effects model for these protein contents:
+$Y_{ij} = \mu + T_i + E_{ij}$.
+
+## Part A
+
+Give all distributional assumptions and limits on indices/subscripts i and j.
+
