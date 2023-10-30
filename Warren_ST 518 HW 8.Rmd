@@ -123,6 +123,8 @@ protein_transform %>%
   theme_bw()
 ```
 
+We should notice that there is something going on in Plant 2 as its variance (residual output) is much wider than the other plants.
+
 ## Part H
 
 One of the observations is an outlier that occurred because of a transposition error. Do your best to identify this observation. The tens digit is wrong. Without changing the value of this
