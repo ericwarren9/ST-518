@@ -3,10 +3,12 @@ title: "ST 518 Homework 8"
 author: "Eric Warren"
 date: "November 4, 2023"
 urlcolor: blue
+header-includes:
+  - \usepackage{float}
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.pos = "H", out.extra = "")
 options(scipen = 999)
 ```
 
@@ -17,7 +19,8 @@ rmarkdown::render("~/ST-518/Warren_ST 518 HW 8.Rmd",
               output_options = list(
                 toc = TRUE, 
                 toc_depth = 3,
-                number_sections = TRUE
+                number_sections = TRUE,
+                extra_dependencies = "float"
                 )
               )
 ```
@@ -160,7 +163,7 @@ model2 <- lm(content ~ Plant, protein_transform2)
   
 # Problem 2
 
-This problem expands on our work with sample size and power calculations and makes explicit use of `PROC GLMPOWER` in **SAS**. The non-central F-distributions of F ratios for factorial effects can be quantified in a manner similar to what we did with single factor experiments. Consider designing a 2 ×4 factorial experiment with the following means:
+This problem expands on our work with sample size and power calculations and makes explicit use of `PROC GLMPOWER` in **SAS**. The non-central F-distributions of F ratios for factorial effects can be quantified in a manner similar to what we did with single factor experiments. Consider designing a 2 x4 factorial experiment with the following means:
 
 |Factor A | Factor B-1 | Factor B-2 | Factor B-3 | Factor B-4 | Marginal Means |
 |:----|:-----:|:-----:|:-----:|:-----:|-----:|
@@ -170,7 +173,10 @@ This problem expands on our work with sample size and power calculations and mak
 
 ## Part A
 
-![Code to Run](HW8 P2-a Code.png)
+\begin{figure}[H]
+\includegraphics{HW8 P2-a Code.png}
+\caption{Code to Run}
+\end{figure}
 
 Use `PROC GLMPOWER` code like that given above to obtain the power to detect
 
@@ -190,12 +196,15 @@ when $r = 3, 4, 5$ and $\sigma = 6$ or $\sigma = 10$. Enter the powers in tables
 
 |$\sigma$| r = 3 | r = 4 | r = 5 |
 |:----|:-----:|:-----:|-----:|
-|6 |.996| | >.999|
+|6 |.996| | $>.999$|
 |10 | | | .957|
 
 When we run this code, we get the following output table:
 
-![Power Calculations Output Table](HW8 P2-a Power Calcs.png)
+\begin{figure}[H]
+\includegraphics{HW8 P2-a Power Calcs.png}
+\caption{Power Calculations Output Table}
+\end{figure}
 
 We can use this to fill in our table. When `N Total` is 24, $r = 3$; when `N Total` is 32, $r = 4$; when `N Total` is 40, $r = 5$.  When `Source = a` this is looking at the main effects of factor a; when `Source = b` this is looking at the main effects of factor b; When `Source = a*b` this is looking at $A * B$ interaction. We will now use this information and table above to fill in our table in an appropriate way.
 
