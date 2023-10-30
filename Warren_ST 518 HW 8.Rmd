@@ -127,7 +127,7 @@ observation, the estimated intraplant correlation is $\hat{\rho} = 0.2823$. If t
 
 This question is basically answered in the prompt. We know that a data analyst should never to modify an experiment without consulting with the experimentalist. So that is what we should do first. We should identify the outlier which seems to be the result of *Plant 2 Plot 1* as something in the 20s seems very low. Now before making this change, we need to talk with the experimentalist and tell them that we found something that we believe to be an error. After discussing with them, we should ask them what steps we should do next (i.e. if we should change the result to the correct value) before actually doing it. Then once we get their approval we should change our result and do our analysis again. If they say do not change it, then do not do so but maybe make a note of the outlier and the suspicion that an error could have occurred but not confirmed (if the experimentalist agrees this is the best way to proceed). Again we need to remember we are working with/for the experimentalist so we need to proceed in the way they want, so we should always double check and ask for approval before jumping into changes.
 
-## Part I
+## Part I (Not Graded)
 
 Repeat problems (b), (c), (d) and (f) after correcting the transposition error mentioned in (h).
 
