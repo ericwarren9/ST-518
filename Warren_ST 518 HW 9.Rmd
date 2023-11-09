@@ -1,0 +1,108 @@
+---
+title: "ST 518 Homework 9"
+author: "Eric Warren"
+date: "November 11, 2023"
+urlcolor: blue
+header-includes:
+  - \usepackage{float}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.pos = "H", out.extra = "")
+options(scipen = 999)
+```
+
+```{r output setup, eval=FALSE, echo=FALSE}
+# This code allows us to render a pdf document
+rmarkdown::render("~/ST-518/Warren_ST 518 HW 9.Rmd", 
+              output_format = "pdf_document", 
+              output_options = list(
+                toc = TRUE, 
+                toc_depth = 3,
+                number_sections = TRUE,
+                extra_dependencies = "float"
+                )
+              )
+```
+
+# Problem 1
+
+Consider a random effects model to analyze data from a completely randomized experimental design, $Y_{ij} = \mu + T_i + E_{ij}$ , with $i = 1, ..., t$ and $j = 1, ... , n$ where $T_i \sim^{iid} N(0, \sigma_T^2)$ and $E_{ij} \sim^{iid} N(0, \sigma^2)$ with $T_i \bot  E_{ij}$.
+
+## Part A
+
+Give the mean and variance of an observation, $Y_{ij}$.
+
+The mean of $Y_{ij}$, given that $Y_{ij} = \mu + T_i + E_{ij}$, is $E(Y_{ij}) = E(\mu + T_i + E_{ij}) = E(\mu) + E(T_i) + E(E_{ij}) = \mu + 0 + 0 = \mu$. The variance of $Y_{ij}$ is $Var(Y_i) = Var(\mu + T_i + E_{ij}) = Var(\mu) + Var(T_i) + Var(E_{ij}) = 0 + \sigma_T^2 + \sigma^2 = \sigma_T^2 + \sigma^2$.
+
+## Part B
+
+Write a treatment mean, $\bar{Y_{i.}}$ as a function of $\mu$ and (averages of) random effects.
+
+We know that $\bar{Y_{i.}} = \frac{1}{n} \sum (\mu + T_i + E_{ij}) = \mu + \frac{1}{n} (T_i + T_i + ... + T_i) + \frac{1}{n} (E_{i1} + E_{i2} + ... + E_{in}) = \mu + T_i + \bar{E_{i.}}$.
+
+## Part C
+
+Give the mean and variance of a sample treatment mean, $\bar{Y_{i.}}$
+
+We can find the mean of $\bar{Y_{i.}}$ by saying that $E(\bar{Y_{i.}}) = E(\mu + T_i + \bar{E_{i.}}) = E(\mu) + E(T_i) + E(E_{i.}) = \mu + 0 + 0 = \mu$. The variance of $\bar{Y_{i.}}$ is $Var(\mu + T_i + \bar{E_{i.}}) = Var(\mu) + Var(T_i) + Var(E_{i.}) = 0 + \sigma_T^2 + \frac{\sigma^2}{n} = \sigma_T^2 + \frac{\sigma^2}{n} = \frac{n \sigma_T^2 + \sigma^2}{n} = \frac{1}{n} E(MS(Trt))$.
+
+## Part D
+
+Write the grand mean, $\bar{Y_{..}}$ as a function of $\mu$ and averages of random effects.
+
+$\bar{Y_{..}} = \frac{1}{nt} (\mu + T_i + E_{ij}) = \mu + \frac{nT_1 + ... + nT_t}{nt} + \frac{1}{nt} (E_{11} + E_{12} + ... + E_{1n} + E_{t1} + ... + E_{tn}) = \mu + \bar{T_.} + \bar{E_{..}}$.
+
+## Part E
+
+Give the mean and variance of the grand mean, $\bar{Y_{..}}$. Be clear about where the assumption that $T_i \bot E_{ij}$ is used.
+
+We can first find the mean for $\bar{Y_{..}}$ which is $E(\bar{Y_{..}}) = E(\mu + \bar{T_.} + \bar{E_{..}}) = E(\mu) + E(\bar{T_.}) + E(\bar{E_{..}}) = \mu + 0 + 0 = \mu$. The variance for $\bar{Y_{..}}$ can be found by first using the assumption that comes from $T_i \bot E_{ij}$ being true. In this case, since this property of both random variables $T$ and $E$ being independent than the average of those two random variables $\bar{T_{.}}$ and $\bar{E_{..}}$ are also independent. Because of this we can say the variance of this sum of averages is the same of the sum of the variance of averages. Therefore we can say that $Var(\bar{Y_{..}}) = Var(\mu + \bar{T_.} + \bar{E_{..}}) = Var(\mu) + Var(\bar{T_.}) + Var(\bar{E_{..}}) = 0 + \frac{\sigma_T^2}{t} + \frac{\sigma^2}{nt} = \frac{1}{nt} (n\sigma_T^2 + \sigma^2) = \frac{1}{nt} E(MS(T))$.
+
+## Part F
+
+Derive $E(\frac{1}{t-1} \sum \sum (\bar{Y_{i.}} - \bar{Y_{..}})^2)$
+
+We know that $\sum \sum (\bar{Y_{i.}} - \bar{Y_{..}})^2 = SS(Trt)$ and that $MS(Trt) = \frac{SS(Trt)}{t-1}$ and we will use these two things to get $E(\frac{1}{t-1} \sum \sum (\bar{Y_i.} - \bar{Y_{..}})^2)$. Therefore, $E(\frac{1}{t-1} \sum \sum (\bar{Y_i.} - \bar{Y_{..}})^2) = E(\frac{1}{t-1} * SS(Trt)) = E(\frac{SS(Trt)}{t-1}) = E(MS(Trt)) = n \sigma_T^2 + \sigma^2$.
+
+## Part G
+
+What is the sampling distribution of the statistic W where $W = \frac{\sum \sum (\bar{Y_i.} - \bar{Y_{..}})^2}{n \sigma_T^2 + \sigma^2}$?
+
+We know in this case that $\sum \sum (\bar{Y_{i.}} - \bar{Y_{..}})^2 = SS(Trt) = (t-1) MS(Trt)$. Thus, $W = \frac{\sum \sum (\bar{Y_{i.}} - \bar{Y_{..}})^2}{n \sigma_T^2 + \sigma^2} = \frac{SS(Trt)}{n \sigma_T^2 + \sigma^2} = \frac{(t-1) MS(Trt)}{n \sigma_T^2 + \sigma^2} = (t-1) \frac{MS(Trt)}{n \sigma_T^2 + \sigma^2}$ in which we know that this statistic W follows a sampling distribution of $\chi_{t-1}^2$ or $\chi^2$ with $t-1$ degrees of freedom.
+
+## Part H
+
+Derive $E(\frac{1}{t(n-1)} \sum \sum (Y_{ij} - \bar{Y_{i.}})^2)$
+
+We know that $\sum \sum (Y_{ij} - \bar{Y_{i.}})^2 = SS(E)$ and that $MS(E) = \frac{SS(E)}{t(n-1)}$ and we will use these two things to get $E(\frac{1}{t(n-1)} \sum \sum (Y_{ij} - \bar{Y_{i.}})^2)$. Therefore, $E(\frac{1}{t(n-1)} \sum \sum (Y_{ij} - \bar{Y_{i.}})^2) = E(\frac{1}{t(n-1)} SS(E)) = E(\frac{SS(E)}{t(n-1)}) = E(MS(E)) = \sigma^2$.
+
+## Part I
+
+What is the sampling distribution of the statistic X where $X = \frac{\sum \sum (Y_{ij} - \bar{Y_{i.}})^2}{\sigma^2}$
+
+Note that $N-t = t(n-1)$. We know in this case that $\sum \sum (Y_{ij} - \bar{Y_{i.}})^2 = SS(E) = (t(n-1)) MS(E)$. Thus, $W = \frac{\sum \sum (Y_{ij} - \bar{Y_{i.}})^2}{\sigma^2} = \frac{SS(E)}{\sigma^2} = \frac{(t(n-1)) MS(E)}{\sigma^2} = (t(n-1)) \frac{MS(E)}{\sigma^2} = (N-t) \frac{MS(E)}{\sigma^2}$ in which we know that this statistic X follows a sampling distribution of $\chi_{N-t}^2$ or $\chi^2$ with $N-t$ degrees of freedom or lastly the same as $\chi^2$ with $t(n-1)$ degrees of freedom.
+
+# Problem 2
+
+Consider a mixed model for a crossed two factor design,
+$Y_{ijk} = \mu + \alpha_i + B_j + (\alpha B)_{ij} + E_{ijk}$ with $i = 1, ..., a; j = 1, ..., b; k = 1, ..., n$. $B_j \sim^{iid} N(0, \sigma_B^2)$ and $(\alpha B)_{ij} \sim^{iid} N(0, \sigma_{\alpha B}^2)$ and $E_{ijk} \sim^{iid} N(0, \sigma^2)$. Assume $B_j$ and $(\alpha B)_{ij}$ and $E_{ijk}$ are
+mutually independent random samples.
+
+## Part A
+
+Consider the difference between two A treatment means, $\bar{Y_{2..}} - \bar{Y_{1..}}$. Derive the variance of this difference.
+
+## Part B
+
+Use the rules given on slides 17 to specify $E[MS(AB)]$.
+
+We know from our table that for a mixed model for a crossed two factor design, $E[MS(AB)] = \sigma^2 + n \sigma_{\alpha B}^2$.
+
+## Part C
+
+Consider this model for the data from the experiment to compare campylobacter counts across locations in chicken plants, with data collected at several randomly chosen days. Report a 95% confidence interval for the mean difference in bacteria count (on a log-scale) before and after the washer. Though a mixed model was not fit, the output from the fitted model below should supply the necessary statistics to compute the interval.
+
+## Part D
+
+Report a 95% confidence interval for the error variance.
