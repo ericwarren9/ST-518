@@ -4,7 +4,7 @@
 # Make sequence -----------------------------------------------------------
 
 # Set up the for loop
-set.seed(999)
+set.seed(99)
 x <- runif(min = 0, max = 1, n = 1000)
 my_list1 <- list()
 my_list2 <- list()
@@ -31,13 +31,17 @@ df <- data.frame(cbind(n, S_n))
 plot(df$n, df$S_n, main = "Plot of S_n", xlab = "n", ylab = "S_n")
 
 # Part B
-plot(df$n, df$S_n/df$n, main = "Plot of S_n/n", xlab = "n", ylab = "S_n/n")
+df$partB <- df$S_n/df$n
+plot(df$n, df$partB, main = "Plot of S_n/n", xlab = "n", ylab = "S_n/n")
 
 # Part C
-plot(df$n, df$S_n-(df$n/2), main = "Plot of S_n-(n/2)", xlab = "n", ylab = "S_n-(n/2)")
+df$partC <- df$S_n - (df$n / 2)
+plot(df$n, df$partC, main = "Plot of S_n-(n/2)", xlab = "n", ylab = "S_n-(n/2)")
 
 # Part D
-plot(df$n, (df$S_n/(df$n/2)) / n, main = "Plot of (S_n-(n/2)) / n", xlab = "n", ylab = "(S_n-(n/2)) / n")
+df$partD <- (df$S_n - (df$n / 2)) / n
+plot(df$n, df$partD, main = "Plot of (S_n-(n/2)) / n", xlab = "n", ylab = "(S_n-(n/2)) / n")
 
 # Part E
-plot(df$n, (df$S_n/(df$n/2)) / sqrt(n), main = "Plot of (S_n-(n/2)) / sqrt(n)", xlab = "n", ylab = "(S_n-(n/2)) / sqrt(n)")
+df$partE <- df$partD <- (df$S_n - (df$n / 2)) / sqrt(n)
+plot(df$n, df$partE, main = "Plot of (S_n-(n/2)) / sqrt(n)", xlab = "n", ylab = "(S_n-(n/2)) / sqrt(n)")
