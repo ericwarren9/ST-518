@@ -93,16 +93,22 @@ mutually independent random samples.
 
 Consider the difference between two A treatment means, $\bar{Y_{2..}} - \bar{Y_{1..}}$. Derive the variance of this difference.
 
+We know that $\bar{Y_{2..}} = \frac{1}{nb} \sum_{j=1}^b \sum_{k=1}^n (\mu + \alpha_2 + B_j + (\alpha B)_{2j} + E_{2jk}) = \mu + \alpha_2 + \bar{B} + \bar{(\alpha B)_{2.}} + \bar{E_{2..}}$ and $\bar{Y_{1..}} = \frac{1}{nb} \sum_{j=1}^b \sum_{k=1}^n (\mu + \alpha_1 + B_j + (\alpha B)_{1j} + E_{1jk}) = \mu + \alpha_1 + \bar{B} + \bar{(\alpha B)_{1.}} + \bar{E_{1..}}$. Thus, $\bar{Y_{2..}} - \bar{Y_{1..}} = \mu + \alpha_2 + \bar{B} + \bar{(\alpha B)_{2.}} + \bar{E_{2..}} - (\mu + \alpha_1 + \bar{B} + \bar{(\alpha B)_{1.}} + \bar{E_{1..}}) = \alpha_2 - \alpha_1 + \bar{(\alpha B)_{2.}} - \bar{(\alpha B)_{1.}} + \bar{E_{2..}} - \bar{E_{1..}}$ Therefore, the $Var(\bar{Y_{2..}} - \bar{Y_{1..}}) = Var(\alpha_2 - \alpha_1 + \bar{(\alpha B)_{2.}} - \bar{(\alpha B)_{1.}} + \bar{E_{2..}} - \bar{E_{1..}}) = \frac{\sigma_{\alpha B}^2}{b} + \frac{\sigma_{\alpha B}^2}{b} + \frac{\sigma^2}{nb} \frac{\sigma^2}{nb} = \frac{2\sigma_{\alpha B}^2}{b} + \frac{2\sigma^2}{nb} = \frac{2}{nb} (n \sigma_{\alpha B}^2 + \sigma^2) = \frac{2}{nb} E(MS(\alpha B))$.
+
 ## Part B
 
-Use the rules given on slides 17 to specify $E[MS(AB)]$.
+Use the rules given on slides 17 to specify $E[MS(\alpha B)]$.
 
-We know from our table that for a mixed model for a crossed two factor design, $E[MS(AB)] = \sigma^2 + n \sigma_{\alpha B}^2$.
+We know from our table that for a mixed model for a crossed two factor design, $E[MS(\alpha B)] = \sigma^2 + n \sigma_{\alpha B}^2$.
 
 ## Part C
 
 Consider this model for the data from the experiment to compare campylobacter counts across locations in chicken plants, with data collected at several randomly chosen days. Report a 95% confidence interval for the mean difference in bacteria count (on a log-scale) before and after the washer. Though a mixed model was not fit, the output from the fitted model below should supply the necessary statistics to compute the interval.
 
+In this case, we know that $\bar{Y_{1..}}$ is the mean of bacteria count (on a log-scale) after the washer and $\bar{Y_{2..}}$ is the mean of bacteria count (on a log-scale) before the washer. We also know from our output that $\bar{Y_{1..}} = 10.4953141$ and $\bar{Y_{2..}} = 10.8869897$. Thus, $\bar{Y_{2..}} - \bar{Y_{1..}} = 10.8869897 - 10.4953141 = 0.3916756$. Now we know the confidence interval for this is $\bar{Y_{2..}} - \bar{Y_{1..}} \pm t_{df, 1 - \frac{\alpha}{2}} SE(\bar{Y_{2..}} - \bar{Y_{1..}}) = \bar{Y_{2..}} - \bar{Y_{1..}} \pm t_{df, 1 - \frac{\alpha}{2}} \sqrt{Var(\bar{Y_{2..}} - \bar{Y_{1..}})} = \bar{Y_{2..}} - \bar{Y_{1..}} \pm t_{df, 1 - \frac{\alpha}{2}} \sqrt{\frac{2}{nb} E(MS(\alpha B))}$. From the chart, we know that $E(MS(\alpha B)) = \hat{MS(\alpha B)} =  0.75559410$. Now note that in a 95% confidence interval, $\alpha = 1 - .95 = .05$ so $\frac{\alpha}{2} = \frac{.05}{2} = .025$. Lastly, our df in this case is the same as the df of $\hat{MS(\alpha B)}$ which is $(a-1)(b-1) = (3-1)(4-1) = 2*3 = 6$ (as this matches our output in the directions as well). So we can now plug in our confidence interval to get $\bar{Y_{2..}} - \bar{Y_{1..}} \pm t_{df, 1 - \frac{\alpha}{2}} \sqrt{\frac{2}{nb} E(MS(\alpha B))} = 0.3916756 \pm t(6, 1-.025) \sqrt{\frac{2}{30} 0.75559410} = 0.3916756 \pm t(6, .975) \sqrt{\frac{2}{30} 0.75559410} = 0.3916756 \pm 2.446912 \sqrt{\frac{2}{30} 0.75559410}$. By plugging in this final confidence interval we get a lower bound of `r 0.3916756 - (2.446912 * sqrt((2/30) * 0.75559410))` and an upper bound of `r 0.3916756 + (2.446912 * sqrt((2/30) * 0.75559410))`. Therefore, we are 95% confident that the true mean difference in bacteria count (on a log-scale) before and after the washer is between `r 0.3916756 - (2.446912 * sqrt((2/30) * 0.75559410))` and `r 0.3916756 + (2.446912 * sqrt((2/30) * 0.75559410))`.
+
 ## Part D
 
 Report a 95% confidence interval for the error variance.
+
+We know that the confidence interval for error variance is represented by $(\frac{(ab(n-1)) MS(E)}{\chi_{1 - \frac{\alpha}{2}, (ab(n-1))}^2}, \frac{(ab(n-1)) MS(E)}{\chi_{\frac{\alpha}{2}, (ab(n-1))}^2})$. In this case we know that $ab(n-1) = 4(3)(10-1) = 4(3)(9) = 108$ and $MS(E) =  0.5486569$ from our output in the directions. We also know from **Part C** that $1 - \frac{\alpha}{2} = 0.975$ and $\frac{\alpha}{2} = 0.025$ for 95% confidence intervals. Therefore, we can say that $(\frac{(ab(n-1)) MS(E)}{\chi_{1 - \frac{\alpha}{2}, (ab(n-1))}}, \frac{(ab(n-1)) MS(E)}{\chi_{\frac{\alpha}{2}, (ab(n-1))}^2}) = (\frac{108 * 0.5486569}{\chi_{.975, 108}}, \frac{108 * 0.5486569}{\chi_{.025, 108}^2}) = (\frac{59.25495}{138.6506}, \frac{59.25495}{81.13292}) = (0.4273689, 0.7303441)$. Therefore, we are 95% confident that the true error variance is between 0.4273689 and 0.7303441.
