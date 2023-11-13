@@ -1,0 +1,91 @@
+---
+title: "ST 518 Homework 10"
+author: "Eric Warren"
+date: "November 18, 2023"
+urlcolor: blue
+header-includes:
+  - \usepackage{float}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.pos = "H", out.extra = "")
+options(scipen = 999)
+```
+
+```{r output setup, eval=FALSE, echo=FALSE}
+# This code allows us to render a pdf document
+rmarkdown::render("~/ST-518/Warren_ST 518 HW 10.Rmd", 
+              output_format = "pdf_document", 
+              output_options = list(
+                toc = TRUE, 
+                toc_depth = 3,
+                number_sections = TRUE,
+                extra_dependencies = "float"
+                )
+              )
+```
+
+# Problem 1
+
+Define the symbols $Y, X, \beta, Z, \gamma, \epsilon, G, R$, and then use them to write out the general form for a linear, mixed effects model where all random effects are assumed mean zero, normally distributed random variables.
+
+We know the following about each variable:
+
+- $Y$ is a N x 1 column vector, the outcome variable
+- $X$ is a N x p matrix of the p predictor variables
+- $\beta$ is a p x 1 column vector column vector of the fixed-effects regression coefficients
+- $Z$ is the N x q design matrix for the q random effects (the random complement to the fixed $X$)
+- $\gamma$ is the q x 1 vector of the random effects (the random complement to the fixed $\beta$)
+- $\epsilon$ is the N x 1 column vector of the residuals, the part of $Y$ that is not explained by the model
+- $G$ is the variance-covariance matrix of the random effects
+- $R$ is the residual covariance structure known as $R = I\sigma_{\epsilon}^2$ where $I$ is the identity matrix (diagonal matrix of 1s) and $\sigma_{\epsilon}^2$ is the residual variance. 
+
+Our model for a linear mixed effects case is $Y = X\beta + Z\gamma + \epsilon$ where $\gamma_j \sim N(0, G)$ and $\epsilon_{ij} \sim N(0, R)$.
+
+# Problem 2
+
+Consider the plant height example presented on slide 63/71 of the mixed model lecture notes. Consider a linear model with mixed effects for a two factor experiment where factor A is modeled with fixed effects and B random, nested in A: $Y_{ijk} = \mu + \alpha_i + B_{j(i)} + E_{ijk}$ where $B_{j(i)} \sim^{iid} N(0, \sigma_{B(A)}^2)$ and $E_{ijk} \sim^{iid} N(0, \sigma^2)$.
+
+## Part A
+
+Derive the variance of a treatment average: $Var(\bar{Y_{i..}})$
+ 
+## Part B
+
+Derive the variance of a contrast among treatment averages: $Var(\sum_i c_i \bar{Y_{i..}})$
+
+## Part C
+
+Give an unbiased estimator of $Var(\bar{Y_{i..}})$ and show that it is unbiased.
+
+## Part D
+
+Give an unbiased estimator of $Var(\sum_i c_i \bar{Y_{i..}})$ and show that it is unbiased.
+
+## Part E
+
+Consider the matrix formulation of this model. Assume the covariance matrix of the error term $\epsilon$ is a diagonal matrix $R = I_{20} * \sigma^2$. Give the entire fixed and random effect design matrices, $X$ and $Z$.
+
+## Part F
+
+Give the covariance matrix, $G$ of the vector of random effects, $\gamma$.
+
+# Problem 3
+
+An experiment was conducted to compare four labs in their assessment of amylase. Note that inference is to be limited to these four labs (“narrow scope”) as opposed to the population of all labs. Four technicians were sampled from each lab, and each technician was assigned n = 10 specimens to measure. A nested model was fit with mean squares given below, along with lab means.
+
+## Part A
+
+Write out a linear mixed effects model appropriate to the experiment.
+
+## Part B
+
+Is the observed difference between the means for labs 2 and 3 significant at level $\alpha = 0.05$? Explain.
+
+## Part C
+
+Estimate the correlation between two measurements made by the same technician.
+
+## Part D
+
+Suppose Labs 1 and 2 use one technique while Labs 3 and 4 use another. Test the hypothesis that the average of the Lab 1 and Lab 2 means is equal to the average of the Lab 3 and Lab 4 means. Report an 95% appropriate confidence interval to evaluate the effect of the technique.
