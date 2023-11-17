@@ -37,8 +37,8 @@ We know the following about each variable:
 - $Z$ is the N x q design matrix for the q random effects (the random complement to the fixed $X$)
 - $\gamma$ is the q x 1 vector of the random effects (the random complement to the fixed $\beta$)
 - $\epsilon$ is the N x 1 column vector of the residuals, the part of $Y$ that is not explained by the model
-- $G$ is the variance-covariance matrix of the random effects
-- $R$ is the residual covariance structure known as $R = I\sigma_{\epsilon}^2$ where $I$ is the identity matrix (diagonal matrix of 1s) and $\sigma_{\epsilon}^2$ is the residual variance. 
+- $G$ is the variance-covariance matrix of the random effects. 
+- $R$ is the residual covariance structure known as $R = I\sigma_{\epsilon}^2$ where $I$ is the identity matrix (diagonal matrix of 1s) and $\sigma_{\epsilon}^2$ is the residual variance.
 
 Our model for a linear mixed effects case is $Y = X\beta + Z\gamma + \epsilon$ where $\gamma_j \sim N(0, G)$ and $\epsilon_{ij} \sim N(0, R)$.
 
@@ -49,26 +49,36 @@ Consider the plant height example presented on slide 63/71 of the mixed model le
 ## Part A
 
 Derive the variance of a treatment average: $Var(\bar{Y_{i..}})$
+
+$Var(\bar{Y_{i..}}) = Var(\mu + \alpha_i + \bar{B_{.(i)}} + \bar{E_{i..}}) = \frac{\sigma_{B(\alpha)}^2}{b} + \frac{\sigma^2}{nb} = \frac{1}{nb} (n \sigma_{B(A)}^2 + \sigma^2)$
  
 ## Part B
 
 Derive the variance of a contrast among treatment averages: $Var(\sum_i c_i \bar{Y_{i..}})$
 
+$Var(\sum_i c_i \bar{Y_{i..}}) = \sum_i c_i^2 * Var(\mu + \alpha_i + \bar{B_{.(i)}} + \bar{E_{i..}}) = \sum_i c_i^2 (\frac{\sigma_{B(\alpha)}^2}{b} + \frac{\sigma^2}{nb}) = \sum_i c_i^2 (\frac{1}{nb} (n \sigma_{B(A)}^2 + \sigma^2))$
+
 ## Part C
 
 Give an unbiased estimator of $Var(\bar{Y_{i..}})$ and show that it is unbiased.
+
+$\hat{Var(\bar{Y_{i..}}}) = \frac{1}{nb} (n \hat{\sigma_{B(A)}}^2 + \hat{\sigma}^2) = \frac{1}{nb} (MS(B(A)))$. We will it is unbiased by saying that $E(\hat{Var(\bar{Y_{i..}}})) = Var(\bar{Y_{i..}})$. $E(\hat{Var(\bar{Y_{i..}}})) = E(\frac{1}{nb} (MS(B(A)))) = \frac{1}{nb} E(MS(B(A))) = \frac{1}{nb} (n \sigma_{B(A)}^2 + \sigma^2) = Var(\bar{Y_{i..}})$. Therefore, $\hat{Var(\bar{Y_{i..}}})$ is an unbiased estimator of $Var(\bar{Y_{i..}})$.
 
 ## Part D
 
 Give an unbiased estimator of $Var(\sum_i c_i \bar{Y_{i..}})$ and show that it is unbiased.
 
+$\hat{Var(\sum_i c_i \bar{Y_{i..}}}) = \sum_i c_i^2 * \frac{1}{nb} (n \hat{\sigma_{B(A)}}^2 + \hat{\sigma}^2) = \sum_i c_i^2 * \frac{1}{nb} (MS(B(A)))$. We will it is unbiased by saying that $E(\hat{Var(\sum_i c_i \bar{Y_{i..}}})) = Var(\sum_i c_i \bar{Y_{i..}})$. $E(\hat{Var(\sum_i c_i \bar{Y_{i..}}})) = E(\sum_i c_i^2 * \frac{1}{nb} (MS(B(A)))) = \sum_i c_i^2 * \frac{1}{nb} E(MS(B(A))) = \sum_i c_i^2 * \frac{1}{nb} (n \sigma_{B(A)}^2 + \sigma^2) = Var(\sum_i c_i \bar{Y_{i..}})$. Therefore, $\hat{Var(\sum_i c_i \bar{Y_{i..}}})$ is an unbiased estimator of $Var(\sum_i c_i \bar{Y_{i..}})$.
+
 ## Part E
 
 Consider the matrix formulation of this model. Assume the covariance matrix of the error term $\epsilon$ is a diagonal matrix $R = I_{20} * \sigma^2$. Give the entire fixed and random effect design matrices, $X$ and $Z$.
 
-## Part F
+We know that $X$ deals with the $\alpha_i$ and $Z$ deals with the $B_{j(i)}$. Therefore, we just got to match terms where $X$ is a 20x6 matrix with the columns being $\mu, \alpha_1, \alpha_2, \alpha_3, \alpha_4, \alpha_5$ and $Z$ is a 20x10 matrix with the columns being $B_{1(1)}, B_{2(1)}, B_{1(2)}, B_{2(2)}, B_{3(1)}, B_{3(2)}, B_{4(1)}, B_{4(2)}, B_{5(1)}, B_{5(2)}$. Therefore, we know that $X = \begin{pmatrix} 1 & 1 & 0 & 0 & 0 & 0 \\ 1 & 1 & 0 & 0 & 0 & 0 \\ 1 & 1 & 0 & 0 & 0 & 0 \\ 1 & 1 & 0 & 0 & 0 & 0 \\ 1 & 0 & 1 & 0 & 0 & 0 \\ 1 & 0 & 1 & 0 & 0 & 0 \\ 1 & 0 & 1 & 0 & 0 & 0 \\ 1 & 0 & 1 & 0 & 0 & 0 \\ 1 & 0 & 0 & 1 & 0 & 0 \\ 1 & 0 & 0 & 1 & 0 & 0 \\ 1 & 0 & 0 & 1 & 0 & 0 \\ 1 & 0 & 0 & 1 & 0 & 0 \\ 1 & 0 & 0 & 0 & 1 & 0 \\ 1 & 0 & 0 & 0 & 1 & 0 \\ 1 & 0 & 0 & 0 & 1 & 0 \\ 1 & 0 & 0 & 0 & 1 & 0 \\ 1 & 0 & 0 & 0 & 0 & 1 \\ 1 & 0 & 0 & 0 & 0 & 1 \\ 1 & 0 & 0 & 0 & 0 & 1 \\ 1 & 0 & 0 & 0 & 0 & 1 \end{pmatrix}$ and we know that $Z = \begin{pmatrix} 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \end{pmatrix}$
 
 Give the covariance matrix, $G$ of the vector of random effects, $\gamma$.
+
+We know that $G$ is also an ab x ab diagonal matrix of $I * \sigma_{B(A)}^2$. In this case $a = 5$ and $b = 2$ so we have a 10 x 10 diagonal matrix of $I * \sigma_{B(A)}^2$ in this case. Thus our matrix $G = \begin{pmatrix} \sigma_{B(A)}^2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & \sigma_{B(A)}^2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & \sigma_{B(A)}^2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & \sigma_{B(A)}^2 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & \sigma_{B(A)}^2 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & \sigma_{B(A)}^2 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & \sigma_{B(A)}^2 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 & \sigma_{B(A)}^2 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & \sigma_{B(A)}^2 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & \sigma_{B(A)}^2 \end{pmatrix}$
 
 # Problem 3
 
