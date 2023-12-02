@@ -106,7 +106,7 @@ $$= \sqrt{\frac{2}{nb} (n\sigma_{B(\alpha)} + \sigma)}$$
 
 Now, we need $SE(\bar{Y_{3..}} - \bar{Y_{2..}}) = Var(\bar{Y_{3..}} - \bar{Y_{2..}}) = \sqrt{\frac{2}{nb} (n\hat{\sigma_{B(\alpha)}} + \hat{\sigma})} = \sqrt{\frac{2}{nb} MS(B(\alpha))}$
 
-Knowing that $SE(\bar{Y_{3..}} - \bar{Y_{2..}}) = \sqrt{\frac{2}{nb} MS(B(\alpha))}$, we can make a $1 - \alpha$ or $1 - .05 = .95$ or 95% confidence interval instead of a normal hypothesis test. If 0 is not in the confidence interval then this is the same as rejecting a hypothesis test. Note that $MS(B(\alpha)) = 1.63$ which comes from the MS(technicians) part of our output in the directions since that is $MS(B(\alpha))$. Our confidence interval is $\bar{Y_{3..}} - \bar{Y_{2..}} \pm t_{1 - \frac{\alpha}{2}, a(b-1)} * SE(\bar{Y_{3..}} - \bar{Y_{2..}}) ===> 1.0 \pm t_{1 - \frac{.05}{2}, 4(4-1)} \sqrt{\frac{2}{nb} MS(B \alpha)} ===> 1.0 \pm t_{.975, 12} \sqrt{{2}{10*4} 1.63}$. Now, $t_{.975, 12} = 2.178813$ which comes from `qt(.975, 12)` in R so our confidence interval is now $1.0 \pm t_{.975, 12} \sqrt{0.04075} ===> 1.0 \pm 2.178813 * 0.285482 ===> 1.0 \pm 0.6220119$ which gives us bounds of (`r 1.0 - 0.6220119`, `r 1.0 + 0.6220119`). As we can see 0 is **NOT** contained in the interval, so we do have statistically significant to say that observed means between labs 2 and 3 are significantly different.
+Knowing that $SE(\bar{Y_{3..}} - \bar{Y_{2..}}) = \sqrt{\frac{2}{nb} MS(B(\alpha))}$, we can make a $1 - \alpha$ or $1 - .05 = .95$ or 95% confidence interval instead of a normal hypothesis test. If 0 is not in the confidence interval then this is the same as rejecting a hypothesis test. Note that $MS(B(\alpha)) = 1.63$ which comes from the MS(technicians) part of our output in the directions since that is $MS(B(\alpha))$. Our confidence interval is $\bar{Y_{3..}} - \bar{Y_{2..}} \pm t_{1 - \frac{\alpha}{2}, a(b-1)} * SE(\bar{Y_{3..}} - \bar{Y_{2..}}) ===> 1.0 \pm t_{1 - \frac{.05}{2}, 4(4-1)} \sqrt{\frac{2}{nb} MS(B \alpha)} ===> 1.0 \pm t_{.975, 12} \sqrt{\frac{2}{10*4} 1.63}$. Now, $t_{.975, 12} = 2.178813$ which comes from `qt(.975, 12)` in R so our confidence interval is now $1.0 \pm t_{.975, 12} \sqrt{0.0815} ===> 1.0 \pm 2.178813 * 0.285482 ===> 1.0 \pm 0.6220119$ which gives us bounds of (`r 1.0 - 0.6220119`, `r 1.0 + 0.6220119`). As we can see 0 is **NOT** contained in the interval, so we do have statistically significant to say that observed means between labs 2 and 3 are significantly different.
 
 ## Part C
 
@@ -133,14 +133,12 @@ First let us get the appropriate values.
 
 Therefore what we are testing which we will call $\hat{\theta} = \frac{1}{2}(\bar{Y_{3..}} + \bar{Y_{4..}}) - \frac{1}{2}(\bar{Y_{1..}} + \bar{Y_{2..}}) = \frac{1}{2}(4.6 + 4.4) - \frac{1}{2}(3.8 + 3.6) = 4.5 - 3.7 = 0.8$. Now we are testing if $H_0: \theta = 0$ and $H_A: \theta \neq 0$ by seeing if we make a 95% confidence interval contains the value of 0 or not. If it does not, then we have statistically significant evidence to say that the average of the Lab 1 and Lab 2 means is **NOT** equal to the average of the Lab 3 and Lab 4 means. 
 
-Now we need to find our confidence interval. We know with help from **Problem 2**, **Problem 3 Part B**, and looking at past modules, we know that our standard error is $\sqrt{\sum_{i=1}^4 \frac{c_i^2}{N_i} * \frac{2}{nb} * MS(B(A))}$ where $N_i$ represents the number of total samples from each lab. This is the same as $n_i * b_i = 10 * 4 = 40$ for each lab. We can rewrite this to get our standard error to be 
+Now we need to find our confidence interval. We know with help from **Problem 2**, **Problem 3 Part B**, and looking at past modules, we know that our standard error is $\sqrt{\sum_{i=1}^4 c_i^2 * \frac{1}{nb} * MS(B(A))}$. This is the same as $n * b = 10 * 4 = 40$ for each lab. We can rewrite this to get our standard error to be 
 
-$$\sqrt{\sum_{i=1}^4 \frac{c_i^2}{N_i} * \frac{2}{nb} * MS(B(A))}$$ $$\sqrt{\sum_{i=1}^4 \frac{c_i^2}{40} * \frac{2}{40} * MS(B(A))}$$
-$$\sqrt{(\frac{(-\frac{1}{2})^2}{40} + \frac{(-\frac{1}{2})^2}{40} + \frac{(\frac{1}{2})^2}{40} + \frac{(\frac{1}{2})^2}{40}) * \frac{2}{40} * 1.63}$$
-$$\sqrt{(\frac{1}{40*4} + \frac{1}{40*4} + \frac{1}{40*4} + \frac{1}{40*4}) * 0.0815}$$
-$$\sqrt{(\frac{1}{160} + \frac{1}{160} + \frac{1}{160} + \frac{1}{160}) * 0.0815}$$
-$$\sqrt{\frac{4}{160} * 0.0815}$$
-$$\sqrt{\frac{1}{40} * 0.0815}$$
-$$\sqrt{0.0020375} ===> 0.04513868$$. 
+$$\sqrt{\sum_{i=1}^4 c_i^2 * \frac{1}{nb} * MS(B(A))}$$ $$\sqrt{\sum_{i=1}^4 c_i^2 \frac{1}{40} * MS(B(A))}$$
+$$\sqrt{((-\frac{1}{2})^2 + (-\frac{1}{2})^2 + (\frac{1}{2})^2 + (\frac{1}{2})^2) * \frac{1}{40} * 1.63}$$
+$$\sqrt{(\frac{1}{4} + \frac{1}{4} + \frac{1}{4} + \frac{1}{4}) * 0.04075}$$
+$$\sqrt{1 * 0.04075}$$
+$$\sqrt{0.04075} ===> 0.2018663$$.
 
-Now our confidence interval is $\hat{\theta} \pm t_{.975, 4(4-1)} * SE(\hat{\theta}) ===> 0.8 \pm t_{.975, 12} * 0.04513868 ===> 0.8 \pm 2.178813 * 0.04513868 ===> 0.8 \pm 0.09834874$, which gives us bounds of (`r 0.8 - 0.09834874`, `r 0.8 + 0.09834874`) for our 95% confidence interval. As we can see 0 is **NOT** contained in the interval, so we do have statistically significant to say that the average of the Lab 1 and Lab 2 means is **NOT** equal to the average of the Lab 3 and Lab 4 means.
+Now our confidence interval is $\hat{\theta} \pm t_{.975, 4(4-1)} * SE(\hat{\theta}) ===> 0.8 \pm t_{.975, 12} * 0.2018663 ===> 0.8 \pm 2.178813 * 0.2018663 ===> 0.8 \pm 0.4398289$, which gives us bounds of (`r 0.8 - 0.4398289`, `r 0.8 + 0.4398289`) for our 95% confidence interval. As we can see 0 is **NOT** contained in the interval, so we do have statistically significant to say that the average of the Lab 1 and Lab 2 means is **NOT** equal to the average of the Lab 3 and Lab 4 means. Actually since all values in the interval are positive, we have reason to believe that the average of the Lab 3 and Lab 4 means are greater than the average of the Lab 1 and Lab 2 means.
